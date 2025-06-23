@@ -1,0 +1,16 @@
+D:\multi media projects\FileCompressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.exe
+D:\multi media projects\FileCompressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.deps.json
+D:\multi media projects\FileCompressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.runtimeconfig.json
+D:\multi media projects\FileCompressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.dll
+D:\multi media projects\FileCompressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.pdb
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.Form1.resources
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.csproj.GenerateResource.cache
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.GeneratedMSBuildEditorConfig.editorconfig
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.AssemblyInfoInputs.cache
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.AssemblyInfo.cs
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.csproj.CoreCompileInputs.cache
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.dll
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\refint\FileCompressor.dll
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.pdb
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.genruntimeconfig.cache
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\ref\FileCompressor.dll
