@@ -43,6 +43,11 @@
             tabCompress = new TabControl();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
+            lvArchiveContents = new ListView();
+            colFileName = new ColumnHeader();
+            colOriginalSize = new ColumnHeader();
+            colCompressedSize = new ColumnHeader();
+            colAlgorithm = new ColumnHeader();
             groupBox4 = new GroupBox();
             debtnBrowse = new Button();
             detxtFilePath = new TextBox();
@@ -216,6 +221,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(lvArchiveContents);
             tabPage2.Controls.Add(groupBox4);
             tabPage2.Controls.Add(btnCancel2);
             tabPage2.Controls.Add(groupBox6);
@@ -227,6 +233,40 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // lvArchiveContents
+            // 
+            lvArchiveContents.CheckBoxes = true;
+            lvArchiveContents.Columns.AddRange(new ColumnHeader[] { colFileName, colOriginalSize, colCompressedSize, colAlgorithm });
+            lvArchiveContents.FullRowSelect = true;
+            lvArchiveContents.Location = new Point(10, 96);
+            lvArchiveContents.Name = "lvArchiveContents";
+            lvArchiveContents.Size = new Size(495, 107);
+            lvArchiveContents.TabIndex = 10;
+            lvArchiveContents.UseCompatibleStateImageBehavior = false;
+            lvArchiveContents.View = View.Details;
+            lvArchiveContents.ItemChecked += listViewArchiveFiles_ItemChecked;
+            lvArchiveContents.SelectedIndexChanged += lvArchiveContents_SelectedIndexChanged;
+            // 
+            // colFileName
+            // 
+            colFileName.Text = "File Name";
+            colFileName.Width = 180;
+            // 
+            // colOriginalSize
+            // 
+            colOriginalSize.Text = "Original Size (B)";
+            colOriginalSize.Width = 100;
+            // 
+            // colCompressedSize
+            // 
+            colCompressedSize.Text = "Compressed Size (B)";
+            colCompressedSize.Width = 120;
+            // 
+            // colAlgorithm
+            // 
+            colAlgorithm.Text = "Algorithm";
+            colAlgorithm.Width = 100;
             // 
             // groupBox4
             // 
@@ -271,7 +311,7 @@
             // 
             groupBox6.Controls.Add(debtnBrowseDistance);
             groupBox6.Controls.Add(detxtOutputPath);
-            groupBox6.Location = new Point(10, 96);
+            groupBox6.Location = new Point(10, 209);
             groupBox6.Name = "groupBox6";
             groupBox6.Size = new Size(495, 77);
             groupBox6.TabIndex = 7;
@@ -359,5 +399,12 @@
         private Button debtnBrowseDistance;
         private TextBox detxtOutputPath;
         private Button btnDecompress_Click;
+        private ListView lvArchiveContents;
+        private ColumnHeader colFileName;
+        private ColumnHeader colOriginalSize;
+        private ColumnHeader colCompressedSize;
+        private ColumnHeader colAlgorithm;
+        private Button button1;
+        private ListBox listArchiveContents;
     }
 }

@@ -19,45 +19,9 @@ namespace FileCompressorApp
         [STAThread]
         static void Main()
         {
-
-            //string[] filePaths = new string[]
-            //{
-            //    @"C:\Users\TasneemMasri\Desktop\original.txt",
-            //    @"C:\Users\TasneemMasri\Desktop\original 2.txt"
-            //};
-
-
-            //foreach (string filePath in filePaths)
-            //{
-            //    if (!File.Exists(filePath))
-            //    {
-            //        Debug.WriteLine($"File not found: {filePath}");
-            //        continue;
-            //    }
-
-            //    string fileName = Path.GetFileNameWithoutExtension(filePath);
-            //    string outputPath = Path.Combine(Path.GetDirectoryName(filePath), fileName + ".bin");
-            //    string decodedPath = Path.Combine(Path.GetDirectoryName(filePath), fileName + "_decoded.txt");
-
-            //    string text = File.ReadAllText(filePath);
-            //    Debug.WriteLine($"Original Text ({fileName}):\n{text}");
-
-            //    List<Symbol> symbols = BuildFrequencyTable(text);
-            //    BuildShannonFanoCodes(symbols);
-
-            //    string encoded = EncodeText(text, symbols);
-            //    Debug.WriteLine($"Encoded ({fileName}): {encoded.Length} bits");
-
-            //    SaveEncodedFile(outputPath, symbols, encoded);
-            //    DecodeFile(outputPath, decodedPath);
-            //}
-
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-
-
         }
 
         public static List<Symbol> BuildFrequencyTable(string text)
@@ -137,35 +101,62 @@ namespace FileCompressorApp
             return bytes;
         }
 
-        public static void SaveEncodedFile(string path, List<Symbol> symbols, string encodedBits)
+        public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths)
         {
-            using (var stream = File.OpenWrite(path))
+            using (var stream = File.OpenWrite(archivePath))
             using (var writer = new BinaryWriter(stream))
             {
-                // Write number of symbols
-                writer.Write(symbols.Count);
+                // Write total number of files in archive
+                writer.Write(inputFilePaths.Count);
 
-                // Write each symbol info:
-                // char (2 bytes), code length (int), code bits packed as bytes
-                foreach (var symbol in symbols)
+                foreach (var filePath in inputFilePaths)
                 {
-                    writer.Write(symbol.Character);
-                    writer.Write(symbol.Code.Length);
+                    string fileName = Path.GetFileName(filePath);
+                    string text = File.ReadAllText(filePath);
 
-                    byte[] codeBytes = PackBits(symbol.Code);
-                    writer.Write(codeBytes.Length);  // write how many bytes code takes
-                    writer.Write(codeBytes);         // write packed bits of code
+                    // Build frequency table & codes
+                    List<Symbol> symbols = BuildFrequencyTable(text);
+                    BuildShannonFanoCodes(symbols);
+
+                    // Encode text
+                    string encodedBits = EncodeText(text, symbols);
+                    byte[] encodedBytes = PackBits(encodedBits);
+
+                    // Write file name length and file name
+                    writer.Write(fileName.Length);
+                    writer.Write(System.Text.Encoding.UTF8.GetBytes(fileName));
+
+                    // Write algorithm used (for now "shannon")
+                    string algorithm = "shannon";
+                    writer.Write(algorithm.Length);
+                    writer.Write(System.Text.Encoding.UTF8.GetBytes(algorithm));
+
+                    // Write original file length in characters
+                    writer.Write(text.Length);
+
+                    // Write number of symbols
+                    writer.Write(symbols.Count);
+
+                    // Write each symbol info
+                    foreach (var symbol in symbols)
+                    {
+                        writer.Write(symbol.Character);
+                        writer.Write(symbol.Code.Length);
+                        byte[] codeBytes = PackBits(symbol.Code);
+                        writer.Write(codeBytes.Length);
+                        writer.Write(codeBytes);
+                    }
+
+                    // Write length of encoded data in bits
+                    writer.Write(encodedBits.Length);
+
+                    // Write length of encoded data in bytes
+                    writer.Write(encodedBytes.Length);
+
+                    // Write encoded data bytes
+                    writer.Write(encodedBytes);
                 }
-
-                // Write length of encoded data in bits
-                writer.Write(encodedBits.Length);
-
-                // Write encoded data bits packed as bytes
-                byte[] encodedBytes = PackBits(encodedBits);
-                writer.Write(encodedBytes.Length);
-                writer.Write(encodedBytes);
             }
-
         }
 
 
@@ -206,36 +197,140 @@ namespace FileCompressorApp
             return bits.ToString();
         }
 
-        public static void DecodeFile(string inputPath, string outputPath)
+        public static void DecodeFile(string archivePath, string outputPath, List<string> filesToExtract)
         {
-            using (var stream = File.OpenRead(inputPath))
+            using (var stream = File.OpenRead(archivePath))
             using (var reader = new BinaryReader(stream))
             {
-                int symbolCount = reader.ReadInt32();
-                List<Symbol> symbols = new List<Symbol>();
+                int fileCount = reader.ReadInt32();
 
-                for (int i = 0; i < symbolCount; i++)
+                for (int f = 0; f < fileCount; f++)
                 {
-                    char ch = reader.ReadChar();
-                    int codeLength = reader.ReadInt32();
-                    int byteLen = reader.ReadInt32();
-                    byte[] codeBytes = reader.ReadBytes(byteLen);
-                    string code = UnpackBits(codeBytes, codeLength);
+                    // Read file name
+                    int fileNameLength = reader.ReadInt32();
+                    string fileName = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
 
-                    symbols.Add(new Symbol { Character = ch, Code = code });
+                    // Read algorithm used
+                    int algoLength = reader.ReadInt32();
+                    string algorithm = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(algoLength));
+
+                    // Read original text length (characters)
+                    int originalLength = reader.ReadInt32();
+
+                    // Read symbols
+                    int symbolCount = reader.ReadInt32();
+                    List<Symbol> symbols = new List<Symbol>();
+                    for (int i = 0; i < symbolCount; i++)
+                    {
+                        char ch = reader.ReadChar();
+                        int codeLength = reader.ReadInt32();
+                        int codeByteLength = reader.ReadInt32();
+                        byte[] codeBytes = reader.ReadBytes(codeByteLength);
+                        string code = UnpackBits(codeBytes, codeLength);
+                        symbols.Add(new Symbol { Character = ch, Code = code });
+                    }
+
+                    // Read encoded data lengths
+                    int encodedBitCount = reader.ReadInt32();
+                    int encodedByteCount = reader.ReadInt32();
+                    byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
+                    string encodedBits = UnpackBits(encodedBytes, encodedBitCount);
+
+                    if (filesToExtract.Contains(fileName))
+                    {
+                        string decodedText = DecodeText(encodedBits, symbols);
+
+                        string outputFilePath;
+
+                        if (filesToExtract.Count == 1 && !Directory.Exists(outputPath))
+                        {
+                            // Single file output, outputPath is file path
+                            outputFilePath = outputPath;
+                        }
+                        else
+                        {
+                            // Multiple files output, outputPath is folder path
+                            if (!Directory.Exists(outputPath))
+                                Directory.CreateDirectory(outputPath);
+
+                            outputFilePath = Path.Combine(outputPath, fileName);
+                        }
+
+                        File.WriteAllText(outputFilePath, decodedText);
+                        Debug.WriteLine($"Extracted: {outputFilePath}");
+                    }
                 }
-
-                int encodedBitCount = reader.ReadInt32();
-                int encodedByteCount = reader.ReadInt32();
-                byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
-
-                string encodedBits = UnpackBits(encodedBytes, encodedBitCount);
-                string decodedText = DecodeText(encodedBits, symbols);
-
-                File.WriteAllText(outputPath, decodedText);
-                Debug.WriteLine($"Decoded file saved to: {outputPath}");
             }
         }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public class ArchiveEntry
+        {
+            public string FileName;
+            public string Algorithm;
+            public int OriginalSize;
+            public int CompressedSize;
+            public long DataPosition;  // Byte offset in the stream
+        }
+
+        public static List<ArchiveEntry> ReadArchiveIndex(string archivePath)
+        {
+            List<ArchiveEntry> entries = new List<ArchiveEntry>();
+
+            using (var stream = File.OpenRead(archivePath))
+            using (var reader = new BinaryReader(stream))
+            {
+                int fileCount = reader.ReadInt32();
+
+                for (int i = 0; i < fileCount; i++)
+                {
+                    int fileNameLength = reader.ReadInt32();
+                    string fileName = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
+
+                    int algoLength = reader.ReadInt32();
+                    string algorithm = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(algoLength));
+
+                    int originalSize = reader.ReadInt32();
+                    int symbolCount = reader.ReadInt32();
+
+                    for (int s = 0; s < symbolCount; s++)
+                    {
+                        reader.ReadChar();              // char
+                        int codeLength = reader.ReadInt32();
+                        int codeByteLength = reader.ReadInt32();
+                        reader.ReadBytes(codeByteLength);
+                    }
+
+                    int bitCount = reader.ReadInt32();
+                    int byteCount = reader.ReadInt32();
+
+                    long dataPos = stream.Position;
+                    reader.BaseStream.Seek(byteCount, SeekOrigin.Current); // skip encoded data
+
+                    entries.Add(new ArchiveEntry
+                    {
+                        FileName = fileName,
+                        Algorithm = algorithm,
+                        OriginalSize = originalSize,
+                        CompressedSize = byteCount,
+                        DataPosition = dataPos
+                    });
+                }
+            }
+
+            return entries;
+        }
+
+
+
+
+
+
+
+
+
 
 
     }

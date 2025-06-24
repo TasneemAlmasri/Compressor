@@ -22,18 +22,13 @@ namespace FileCompressor
             {
                 txtFilePath.Text = string.Join(";", openFileDialog.FileNames);
 
-                // Generate corresponding default .bin paths for output
-                List<string> outputPaths = new List<string>();
-
-                foreach (var path in openFileDialog.FileNames)
+                if (openFileDialog.FileNames.Length > 0)
                 {
-                    string dir = Path.GetDirectoryName(path);
-                    string name = Path.GetFileNameWithoutExtension(path);
-                    string outputPath = Path.Combine(dir, name + ".bin");
-                    outputPaths.Add(outputPath);
+                    string firstFile = openFileDialog.FileNames[0];
+                    string dir = Path.GetDirectoryName(firstFile);
+                    string archivePath = Path.Combine(dir, "archive.bin");
+                    txtOutputPath.Text = archivePath;
                 }
-
-                txtOutputPath.Text = string.Join(";", outputPaths);
             }
         }
 
@@ -74,60 +69,41 @@ namespace FileCompressor
             }
         }
 
+        // Compression Start button handler:
         private void btnStart_Click(object sender, EventArgs e)
         {
-            string[] inputPaths = txtFilePath.Text.Split(';');
-            string[] outputPaths = txtOutputPath.Text.Split(';');
-
+            string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
             if (inputPaths.Length == 0 || inputPaths.Any(p => !File.Exists(p)))
             {
                 MessageBox.Show("Please select valid input files.");
                 return;
             }
 
-            if (outputPaths.Length != inputPaths.Length)
+            string outputArchivePath = txtOutputPath.Text.Trim();
+            if (string.IsNullOrWhiteSpace(outputArchivePath))
             {
-                MessageBox.Show("Mismatch between number of input and output files.");
+                MessageBox.Show("Please select an output archive file path.");
                 return;
             }
 
             string algo = GetSelectedAlgorithm();
-            if (algo == "none")
+            if (algo != "shannon")
             {
-                MessageBox.Show("Please select a compression algorithm.");
+                MessageBox.Show("Only Shannon is implemented for now.");
                 return;
             }
 
-            for (int i = 0; i < inputPaths.Length; i++)
+            try
             {
-                string inputPath = inputPaths[i].Trim();
-                string outputPath = outputPaths[i].Trim();
-
-                try
-                {
-                    string text = File.ReadAllText(inputPath);
-
-                    if (algo == "shannon")
-                    {
-                        var symbols = Program.BuildFrequencyTable(text);
-                        Program.BuildShannonFanoCodes(symbols);
-                        string encoded = Program.EncodeText(text, symbols);
-                        Program.SaveEncodedFile(outputPath, symbols, encoded);
-                    }
-                    else if (algo == "huffman")
-                    {
-                        MessageBox.Show("Huffman not implemented yet.");
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error processing {inputPath}:\n{ex.Message}");
-                }
+                Program.SaveEncodedFile(outputArchivePath, inputPaths.ToList());
+                MessageBox.Show("Compression complete.");
             }
-
-            MessageBox.Show("Compression complete.");
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during compression:\n{ex.Message}");
+            }
         }
+
 
 
 
@@ -185,21 +161,38 @@ namespace FileCompressor
             {
                 detxtFilePath.Text = openFileDialog.FileName;
 
-                // Optional: auto-suggest output .txt file path
                 string dir = Path.GetDirectoryName(openFileDialog.FileName);
-                string name = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
-                detxtOutputPath.Text = Path.Combine(dir, name + "_decoded.txt");
+                string folder = Path.Combine(dir, "Decompressed_" + Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+                detxtOutputPath.Text = folder;
+
+                // Load the archive contents preview
+                LoadArchiveIndex(detxtFilePath.Text);
+
             }
         }
 
         private void debtnBrowseDistance_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
             {
-                detxtOutputPath.Text = saveFileDialog.FileName;
+                folderDialog.Description = "Select a folder to extract decompressed files";
+
+                if (!string.IsNullOrWhiteSpace(detxtOutputPath.Text))
+                {
+                    try
+                    {
+                        folderDialog.SelectedPath = detxtOutputPath.Text;
+                    }
+                    catch
+                    {
+                        // Ignore invalid path
+                    }
+                }
+
+                if (folderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    detxtOutputPath.Text = folderDialog.SelectedPath;
+                }
             }
         }
 
@@ -208,26 +201,42 @@ namespace FileCompressor
             this.Close();
         }
 
+        // Decompression button handler:
         private void btnDecompress_Click_Click(object sender, EventArgs e)
         {
-            string inputPath = detxtFilePath.Text;
-            string outputPath = detxtOutputPath.Text;
+            string inputArchive = detxtFilePath.Text.Trim();
+            string outputPath = detxtOutputPath.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(inputPath) || !File.Exists(inputPath))
+            if (string.IsNullOrWhiteSpace(inputArchive) || !File.Exists(inputArchive))
             {
-                MessageBox.Show("Please select a valid compressed (.bin) file.");
+                MessageBox.Show("Please select a valid archive (.bin) file.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(outputPath))
             {
-                MessageBox.Show("Please select an output file path.");
+                MessageBox.Show("Please select a valid output path.");
+                return;
+            }
+
+            // Get selected entries
+            List<string> selectedFileNames = new List<string>();
+            foreach (ListViewItem item in lvArchiveContents.CheckedItems)
+            {
+                if (item.Tag is Program.ArchiveEntry entry)
+                    selectedFileNames.Add(entry.FileName);
+            }
+
+            if (selectedFileNames.Count == 0)
+            {
+                MessageBox.Show("Please select at least one file to decompress.");
                 return;
             }
 
             try
             {
-                Program.DecodeFile(inputPath, outputPath);
+                // Decompress selected files
+                Program.DecodeFile(inputArchive, outputPath, selectedFileNames);
                 MessageBox.Show("Decompression complete.");
             }
             catch (Exception ex)
@@ -235,5 +244,61 @@ namespace FileCompressor
                 MessageBox.Show($"Error during decompression:\n{ex.Message}");
             }
         }
+
+
+
+        ///////////////////////////////////////////////////////////
+        private void LoadArchiveIndex(string archivePath)
+        {
+            lvArchiveContents.Items.Clear();
+
+            List<Program.ArchiveEntry> entries = Program.ReadArchiveIndex(archivePath);
+
+            foreach (var entry in entries)
+            {
+                ListViewItem item = new ListViewItem(entry.FileName);
+                item.SubItems.Add(entry.Algorithm);
+                item.SubItems.Add(entry.OriginalSize.ToString());
+                item.SubItems.Add(entry.CompressedSize.ToString());
+                item.Tag = entry; // ? This is important!
+                item.Checked = true;  // Select all by default
+                lvArchiveContents.Items.Add(item);
+            }
+        }
+
+        private void lvArchiveContents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void listViewArchiveFiles_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            var selectedItems = lvArchiveContents.CheckedItems;
+
+            if (selectedItems.Count == 1)
+            {
+                // One file selected ? suggest a single file output
+                string originalFile = selectedItems[0].SubItems[0].Text;
+                string dir = Path.GetDirectoryName(detxtFilePath.Text);
+                string nameOnly = Path.GetFileNameWithoutExtension(originalFile);
+                string outputFile = Path.Combine(dir, nameOnly + "_decompressed.txt");
+                detxtOutputPath.Text = outputFile;
+            }
+            else if (selectedItems.Count > 1)
+            {
+                // Multiple files ? suggest folder output
+                string dir = Path.GetDirectoryName(detxtFilePath.Text);
+                string folder = Path.Combine(dir, "Decompressed_" + Path.GetFileNameWithoutExtension(detxtFilePath.Text));
+                detxtOutputPath.Text = folder;
+            }
+
+            // Optional (Step 6): disable decompress button if nothing is selected
+            btnDecompress_Click.Enabled = selectedItems.Count > 0;
+        }
+
+
+
+
     }
-}
+}
