@@ -11,7 +11,7 @@ namespace FileCompressor
         {
             InitializeComponent();
         }
-
+        //done
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -70,6 +70,7 @@ namespace FileCompressor
         }
 
         // Compression Start button handler:
+        //done
         private void btnStart_Click(object sender, EventArgs e)
         {
             string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
@@ -127,7 +128,7 @@ namespace FileCompressor
         {
 
         }
-
+        //done
         private void btnBrowseDistance_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -151,7 +152,8 @@ namespace FileCompressor
         {
 
         }
-
+       
+        //done all below
         private void debtnBrowse_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();

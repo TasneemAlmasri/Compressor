@@ -23,7 +23,7 @@ namespace FileCompressorApp
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
-
+        //done
         public static List<Symbol> BuildFrequencyTable(string text)
         {
             Dictionary<char, int> freqMap = new Dictionary<char, int>();
@@ -41,7 +41,7 @@ namespace FileCompressorApp
                 Frequency = kv.Value
             }).OrderByDescending(s => s.Frequency).ToList();
         }
-
+        //done
         public static void BuildShannonFanoCodes(List<Symbol> symbols)
         {
             void RecursiveSplit(List<Symbol> list)
@@ -74,7 +74,7 @@ namespace FileCompressorApp
 
             RecursiveSplit(symbols);
         }
-
+        //done
         public static string EncodeText(string text, List<Symbol> symbols)
         {
             Dictionary<char, string> codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
@@ -82,7 +82,8 @@ namespace FileCompressorApp
         }
 
 
-        // Converts a string of '0' and '1' to a byte array packed with bits
+        // Converts
+        //done 
         public static byte[] PackBits(string bits)
         {
             int byteCount = (bits.Length + 7) / 8;
@@ -100,7 +101,7 @@ namespace FileCompressorApp
 
             return bytes;
         }
-
+        //done
         public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths)
         {
             using (var stream = File.OpenWrite(archivePath))
@@ -161,7 +162,7 @@ namespace FileCompressorApp
 
 
         /// ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        //done
         public static string DecodeText(string encoded, List<Symbol> symbols)
         {
             Dictionary<string, char> reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
@@ -181,7 +182,7 @@ namespace FileCompressorApp
             }
             return result;
         }
-
+        //done
         public static string UnpackBits(byte[] bytes, int bitCount)
         {
             var bits = new System.Text.StringBuilder();
@@ -196,7 +197,7 @@ namespace FileCompressorApp
 
             return bits.ToString();
         }
-
+        //done
         public static void DecodeFile(string archivePath, string outputPath, List<string> filesToExtract)
         {
             using (var stream = File.OpenRead(archivePath))
@@ -265,7 +266,7 @@ namespace FileCompressorApp
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        //done
         public class ArchiveEntry
         {
             public string FileName;
@@ -274,7 +275,7 @@ namespace FileCompressorApp
             public int CompressedSize;
             public long DataPosition;  // Byte offset in the stream
         }
-
+        //done
         public static List<ArchiveEntry> ReadArchiveIndex(string archivePath)
         {
             List<ArchiveEntry> entries = new List<ArchiveEntry>();
