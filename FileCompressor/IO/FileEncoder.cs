@@ -4,6 +4,7 @@ using FileCompressorApp.Helpers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace FileCompressorApp.IO
 {
@@ -33,63 +34,57 @@ namespace FileCompressorApp.IO
         //    }
         //}
 
-        public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths)
+        public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths, string baseFolder)
         {
             using (var stream = File.OpenWrite(archivePath))
             using (var writer = new BinaryWriter(stream))
             {
-                // Write total number of files in archive
                 writer.Write(inputFilePaths.Count);
 
                 foreach (var filePath in inputFilePaths)
                 {
-                    string fileName = Path.GetFileName(filePath);
                     string text = File.ReadAllText(filePath);
+
+                    // Compute relative path from baseFolder
+                    string relativePath = Path.GetRelativePath(baseFolder, filePath);
 
                     // Build frequency table & codes
                     List<Symbol> symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
-                   ShannonFanoCompressor.BuildCodes(symbols);
+                    ShannonFanoCompressor.BuildCodes(symbols);
 
-                    // Encode text
-                    string encodedBits =ShannonFanoCompressor.Encode(text, symbols);
+                    string encodedBits = ShannonFanoCompressor.Encode(text, symbols);
                     byte[] encodedBytes = BitHelper.PackBits(encodedBits);
 
-                    // Write file name length and file name
-                    writer.Write(fileName.Length);
-                    writer.Write(System.Text.Encoding.UTF8.GetBytes(fileName));
+                    // Write relative file name
+                    writer.Write(relativePath.Length);
+                    writer.Write(System.Text.Encoding.UTF8.GetBytes(relativePath));
 
-                    // Write algorithm used (for now "shannon")
+                    // Write algorithm
                     string algorithm = "shannon";
                     writer.Write(algorithm.Length);
                     writer.Write(System.Text.Encoding.UTF8.GetBytes(algorithm));
 
-                    // Write original file length in characters
+                    // Original text size
                     writer.Write(text.Length);
 
-                    // Write number of symbols
+                    // Write symbol table
                     writer.Write(symbols.Count);
-
-                    // Write each symbol info
                     foreach (var symbol in symbols)
                     {
                         writer.Write(symbol.Character);
                         writer.Write(symbol.Code.Length);
-                        byte[] codeBytes =BitHelper. PackBits(symbol.Code);
+                        byte[] codeBytes = BitHelper.PackBits(symbol.Code);
                         writer.Write(codeBytes.Length);
                         writer.Write(codeBytes);
                     }
 
-                    // Write length of encoded data in bits
                     writer.Write(encodedBits.Length);
-
-                    // Write length of encoded data in bytes
                     writer.Write(encodedBytes.Length);
-
-                    // Write encoded data bytes
                     writer.Write(encodedBytes);
                 }
             }
         }
+
 
         //public static void DecodeFile(string inputPath, string outputPath)
         //{
@@ -130,15 +125,15 @@ namespace FileCompressorApp.IO
 
                 for (int f = 0; f < fileCount; f++)
                 {
-                    // Read file name
+                    // Read file name (this includes the relative path)
                     int fileNameLength = reader.ReadInt32();
-                    string fileName = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
+                    string relativePath = Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
 
-                    // Read algorithm used
+                    // Read algorithm
                     int algoLength = reader.ReadInt32();
-                    string algorithm = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(algoLength));
+                    string algorithm = Encoding.UTF8.GetString(reader.ReadBytes(algoLength));
 
-                    // Read original text length (characters)
+                    // Original file size
                     int originalLength = reader.ReadInt32();
 
                     // Read symbols
@@ -154,38 +149,31 @@ namespace FileCompressorApp.IO
                         symbols.Add(new Symbol { Character = ch, Code = code });
                     }
 
-                    // Read encoded data lengths
-                    int encodedBitCount = reader.ReadInt32();
-                    int encodedByteCount = reader.ReadInt32();
-                    byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
-                    string encodedBits =BitHelper.UnpackBits(encodedBytes, encodedBitCount);
+                    // Read encoded data
+                    int bitCount = reader.ReadInt32();
+                    int byteCount = reader.ReadInt32();
+                    byte[] encodedBytes = reader.ReadBytes(byteCount);
+                    string encodedBits = BitHelper.UnpackBits(encodedBytes, bitCount);
 
-                    if (filesToExtract.Contains(fileName))
+                    // Match against selected files (based on relative path only)
+                    if (filesToExtract.Contains(relativePath))
                     {
                         string decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols);
 
-                        string outputFilePath;
+                        // Determine output file path
+                        string outputFile = Path.Combine(outputPath, relativePath);
+                        string outputDir = Path.GetDirectoryName(outputFile);
 
-                        if (filesToExtract.Count == 1 && !Directory.Exists(outputPath))
-                        {
-                            // Single file output, outputPath is file path
-                            outputFilePath = outputPath;
-                        }
-                        else
-                        {
-                            // Multiple files output, outputPath is folder path
-                            if (!Directory.Exists(outputPath))
-                                Directory.CreateDirectory(outputPath);
+                        if (!Directory.Exists(outputDir))
+                            Directory.CreateDirectory(outputDir);
 
-                            outputFilePath = Path.Combine(outputPath, fileName);
-                        }
-
-                        File.WriteAllText(outputFilePath, decodedText);
-                        Debug.WriteLine($"Extracted: {outputFilePath}");
+                        File.WriteAllText(outputFile, decodedText);
+                        Debug.WriteLine($"Extracted: {outputFile}");
                     }
                 }
             }
         }
+
 
         public static void SaveEncodedFileHuffman(string path, Dictionary<char, string> codeTable, string encodedBits)
         {

@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "oklFx7So9Ps=",
+  "dgSpecHash": "DArk1HGKAcQ=",
   "success": true,
-  "projectFilePath": "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\FileCompressor.csproj",
+  "projectFilePath": "D:\\multi media projects\\FileCompressor\\FileCompressor\\FileCompressor.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\lenovo\\.nuget\\packages\\microsoft.visualbasic\\10.3.0\\microsoft.visualbasic.10.3.0.nupkg.sha512"
+    "C:\\Users\\TasneemMasri\\.nuget\\packages\\microsoft.visualbasic\\10.3.0\\microsoft.visualbasic.10.3.0.nupkg.sha512"
   ],
   "logs": []
 }
