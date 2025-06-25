@@ -40,9 +40,30 @@
             groupBox3 = new GroupBox();
             btnBrowseDistance = new Button();
             txtOutputPath = new TextBox();
+            tabCompress = new TabControl();
+            tabPage1 = new TabPage();
+            tabPage2 = new TabPage();
+            lvArchiveContents = new ListView();
+            colFileName = new ColumnHeader();
+            colOriginalSize = new ColumnHeader();
+            colCompressedSize = new ColumnHeader();
+            colAlgorithm = new ColumnHeader();
+            groupBox4 = new GroupBox();
+            debtnBrowse = new Button();
+            detxtFilePath = new TextBox();
+            btnCancel2 = new Button();
+            groupBox6 = new GroupBox();
+            debtnBrowseDistance = new Button();
+            detxtOutputPath = new TextBox();
+            btnDecompress_Click = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
+            tabCompress.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            groupBox4.SuspendLayout();
+            groupBox6.SuspendLayout();
             SuspendLayout();
             // 
             // txtFilePath
@@ -50,7 +71,6 @@
             txtFilePath.BackColor = SystemColors.ControlLightLight;
             txtFilePath.Location = new Point(12, 26);
             txtFilePath.Name = "txtFilePath";
-            txtFilePath.ReadOnly = true;
             txtFilePath.Size = new Size(368, 27);
             txtFilePath.TabIndex = 0;
             txtFilePath.TextChanged += txtFilePath_TextChanged;
@@ -69,7 +89,7 @@
             // 
             groupBox1.Controls.Add(btnBrowse);
             groupBox1.Controls.Add(txtFilePath);
-            groupBox1.Location = new Point(12, 12);
+            groupBox1.Location = new Point(10, 16);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(495, 77);
             groupBox1.TabIndex = 0;
@@ -82,7 +102,7 @@
             groupBox2.Controls.Add(radioHuffman);
             groupBox2.Controls.Add(radioShannon);
             groupBox2.Controls.Add(btnSetPassword);
-            groupBox2.Location = new Point(12, 189);
+            groupBox2.Location = new Point(10, 182);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(495, 95);
             groupBox2.TabIndex = 1;
@@ -125,7 +145,7 @@
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(12, 306);
+            btnStart.Location = new Point(10, 295);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(221, 29);
             btnStart.TabIndex = 3;
@@ -135,7 +155,7 @@
             // 
             // btnCancel
             // 
-            btnCancel.Location = new Point(258, 306);
+            btnCancel.Location = new Point(256, 295);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(249, 29);
             btnCancel.TabIndex = 4;
@@ -147,7 +167,7 @@
             // 
             groupBox3.Controls.Add(btnBrowseDistance);
             groupBox3.Controls.Add(txtOutputPath);
-            groupBox3.Location = new Point(12, 95);
+            groupBox3.Location = new Point(10, 99);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(495, 77);
             groupBox3.TabIndex = 2;
@@ -170,21 +190,168 @@
             txtOutputPath.BackColor = SystemColors.ControlLightLight;
             txtOutputPath.Location = new Point(12, 26);
             txtOutputPath.Name = "txtOutputPath";
-            txtOutputPath.ReadOnly = true;
             txtOutputPath.Size = new Size(368, 27);
             txtOutputPath.TabIndex = 0;
             txtOutputPath.TextChanged += txtOutputPath_TextChanged;
+            // 
+            // tabCompress
+            // 
+            tabCompress.Controls.Add(tabPage1);
+            tabCompress.Controls.Add(tabPage2);
+            tabCompress.Location = new Point(-2, -2);
+            tabCompress.Name = "tabCompress";
+            tabCompress.SelectedIndex = 0;
+            tabCompress.Size = new Size(522, 367);
+            tabCompress.TabIndex = 5;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(groupBox1);
+            tabPage1.Controls.Add(btnCancel);
+            tabPage1.Controls.Add(groupBox2);
+            tabPage1.Controls.Add(groupBox3);
+            tabPage1.Controls.Add(btnStart);
+            tabPage1.Location = new Point(4, 29);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(514, 334);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "tabPage1";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Controls.Add(lvArchiveContents);
+            tabPage2.Controls.Add(groupBox4);
+            tabPage2.Controls.Add(btnCancel2);
+            tabPage2.Controls.Add(groupBox6);
+            tabPage2.Controls.Add(btnDecompress_Click);
+            tabPage2.Location = new Point(4, 29);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(514, 334);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "tabPage2";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // lvArchiveContents
+            // 
+            lvArchiveContents.CheckBoxes = true;
+            lvArchiveContents.Columns.AddRange(new ColumnHeader[] { colFileName, colOriginalSize, colCompressedSize, colAlgorithm });
+            lvArchiveContents.FullRowSelect = true;
+            lvArchiveContents.Location = new Point(10, 96);
+            lvArchiveContents.Name = "lvArchiveContents";
+            lvArchiveContents.Size = new Size(495, 107);
+            lvArchiveContents.TabIndex = 10;
+            lvArchiveContents.UseCompatibleStateImageBehavior = false;
+            lvArchiveContents.View = View.Details;
+            lvArchiveContents.ItemChecked += listViewArchiveFiles_ItemChecked;
+            lvArchiveContents.SelectedIndexChanged += lvArchiveContents_SelectedIndexChanged;
+            // 
+            // colFileName
+            // 
+            colFileName.Text = "File Name";
+            colFileName.Width = 180;
+            // 
+            // colOriginalSize
+            // 
+            colOriginalSize.Text = "Original Size (B)";
+            colOriginalSize.Width = 100;
+            // 
+            // colCompressedSize
+            // 
+            colCompressedSize.Text = "Compressed Size (B)";
+            colCompressedSize.Width = 120;
+            // 
+            // colAlgorithm
+            // 
+            colAlgorithm.Text = "Algorithm";
+            colAlgorithm.Width = 100;
+            // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(debtnBrowse);
+            groupBox4.Controls.Add(detxtFilePath);
+            groupBox4.Location = new Point(10, 13);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(495, 77);
+            groupBox4.TabIndex = 5;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Source";
+            // 
+            // debtnBrowse
+            // 
+            debtnBrowse.Location = new Point(386, 26);
+            debtnBrowse.Name = "debtnBrowse";
+            debtnBrowse.Size = new Size(103, 29);
+            debtnBrowse.TabIndex = 1;
+            debtnBrowse.Text = "Browse";
+            debtnBrowse.UseVisualStyleBackColor = true;
+            debtnBrowse.Click += debtnBrowse_Click;
+            // 
+            // detxtFilePath
+            // 
+            detxtFilePath.BackColor = SystemColors.ControlLightLight;
+            detxtFilePath.Location = new Point(12, 26);
+            detxtFilePath.Name = "detxtFilePath";
+            detxtFilePath.Size = new Size(368, 27);
+            detxtFilePath.TabIndex = 0;
+            // 
+            // btnCancel2
+            // 
+            btnCancel2.Location = new Point(256, 292);
+            btnCancel2.Name = "btnCancel2";
+            btnCancel2.Size = new Size(249, 29);
+            btnCancel2.TabIndex = 9;
+            btnCancel2.Text = "Cancel";
+            btnCancel2.UseVisualStyleBackColor = true;
+            btnCancel2.Click += btnCancel2_Click;
+            // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(debtnBrowseDistance);
+            groupBox6.Controls.Add(detxtOutputPath);
+            groupBox6.Location = new Point(10, 209);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(495, 77);
+            groupBox6.TabIndex = 7;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Distance";
+            // 
+            // debtnBrowseDistance
+            // 
+            debtnBrowseDistance.Location = new Point(386, 26);
+            debtnBrowseDistance.Name = "debtnBrowseDistance";
+            debtnBrowseDistance.Size = new Size(103, 29);
+            debtnBrowseDistance.TabIndex = 1;
+            debtnBrowseDistance.Text = "Browse";
+            debtnBrowseDistance.UseVisualStyleBackColor = true;
+            debtnBrowseDistance.Click += debtnBrowseDistance_Click;
+            // 
+            // detxtOutputPath
+            // 
+            detxtOutputPath.BackColor = SystemColors.ControlLightLight;
+            detxtOutputPath.Location = new Point(12, 26);
+            detxtOutputPath.Name = "detxtOutputPath";
+            detxtOutputPath.Size = new Size(368, 27);
+            detxtOutputPath.TabIndex = 0;
+            // 
+            // btnDecompress_Click
+            // 
+            btnDecompress_Click.Location = new Point(10, 292);
+            btnDecompress_Click.Name = "btnDecompress_Click";
+            btnDecompress_Click.Size = new Size(221, 29);
+            btnDecompress_Click.TabIndex = 8;
+            btnDecompress_Click.Text = "Start";
+            btnDecompress_Click.UseVisualStyleBackColor = true;
+            btnDecompress_Click.Click += btnDecompress_Click_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(519, 347);
-            Controls.Add(groupBox3);
-            Controls.Add(btnCancel);
-            Controls.Add(btnStart);
-            Controls.Add(groupBox2);
-            Controls.Add(groupBox1);
+            ClientSize = new Size(519, 363);
+            Controls.Add(tabCompress);
             Name = "Form1";
             Text = "Form1";
             groupBox1.ResumeLayout(false);
@@ -193,11 +360,30 @@
             groupBox2.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
+            tabCompress.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
+        //private TextBox txtFilePath;
+        //private Button btnBrowse;
+        //private GroupBox groupBox1;
+        //private GroupBox groupBox2;
+        //private RadioButton radioHuffman;
+        //private RadioButton radioShannon;
+        //private Button btnSetPassword;
+        //private Button btnStart;
+        //private Button btnCancel;
+        //private GroupBox groupBox3;
+        //private Button btnBrowseDistance;
+        //private TextBox txtOutputPath;
         private TextBox txtFilePath;
         private Button btnBrowse;
         private GroupBox groupBox1;
@@ -210,5 +396,28 @@
         private GroupBox groupBox3;
         private Button btnBrowseDistance;
         private TextBox txtOutputPath;
+        private TabControl tabCompress;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private GroupBox groupBox4;
+        private Button debtnBrowse;
+        private TextBox detxtFilePath;
+        private Button btnCancel2;
+        private GroupBox groupBox5;
+        private RadioButton radioButton1;
+        private RadioButton radioButton2;
+        private Button button3;
+        private GroupBox groupBox6;
+        private Button debtnBrowseDistance;
+        private TextBox detxtOutputPath;
+        private Button btnDecompress_Click;
+        private ListView lvArchiveContents;
+        private ColumnHeader colFileName;
+        private ColumnHeader colOriginalSize;
+        private ColumnHeader colCompressedSize;
+        private ColumnHeader colAlgorithm;
+        private Button button1;
+        private ListBox listArchiveContents;
+
     }
 }
