@@ -3,16 +3,20 @@
   "WorkspaceRootPath": "D:\\multi media projects\\FileCompressor\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\helpers\\bithelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\helpers\\bithelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|D:\\multi media projects\\FileCompressor\\filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\io\\fileencoder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\io\\fileencoder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,19 +31,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "BitHelper.cs",
+              "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Helpers\\BitHelper.cs",
+              "RelativeDocumentMoniker": "FileCompressor\\Helpers\\BitHelper.cs",
+              "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Helpers\\BitHelper.cs",
+              "RelativeToolTip": "FileCompressor\\Helpers\\BitHelper.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAIwCUAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-26T00:36:24.801Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "FileEncoder.cs",
               "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\FileEncoder.cs",
               "RelativeDocumentMoniker": "FileCompressor\\IO\\FileEncoder.cs",
               "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\FileEncoder.cs",
               "RelativeToolTip": "FileCompressor\\IO\\FileEncoder.cs",
-              "ViewState": "AgIAAGgAAAAAAAAAAAAgwHAAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-25T21:32:11.78Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Form1.cs",
               "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
               "RelativeDocumentMoniker": "FileCompressor\\Form1.cs",
@@ -52,7 +69,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
               "RelativeDocumentMoniker": "FileCompressor\\Form1.cs",
