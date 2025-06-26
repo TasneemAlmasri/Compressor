@@ -174,16 +174,101 @@ namespace FileCompressor
         //        progressForm.Close();  // إغلاق النافذة بعد انتهاء العملية
         //    }
         //}
+        //private async void btnStart_Click(object sender, EventArgs e)
+        //{
+        //    // 1. التحقق من الملفات والمدخلات
+        //    string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
+        //    if (inputPaths.Length == 0 || inputPaths.Any(p => !File.Exists(p)))
+        //    {
+        //        MessageBox.Show("Please select valid input files.");
+        //        return;
+        //    }
+
+        //    string outputPath = txtOutputPath.Text.Trim();
+        //    if (string.IsNullOrWhiteSpace(outputPath))
+        //    {
+        //        MessageBox.Show("Please select an output file path.");
+        //        return;
+        //    }
+
+        //    string algo = GetSelectedAlgorithm();
+        //    if (algo == "none")
+        //    {
+        //        MessageBox.Show("Please select a compression algorithm.");
+        //        return;
+        //    }
+
+        //    // 2. عرض نافذة التقدم
+        //    var progressForm = new ProgressForm();
+        //    progressForm.Show();
+        //    progressForm.BringToFront();
+        //    await Task.Delay(100); // للسماح للنموذج بالعرض قبل بدء المهمة
+
+        //    try
+        //    {
+        //        // 3. إعداد محدث التقدم
+        //        var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
+        //        {
+        //            var (fileIndex, totalFiles, percent) = data;
+        //            progressForm.UpdateProgress(fileIndex, totalFiles, percent, inputPaths[fileIndex]);
+        //        });
+
+        //        // 4. تنفيذ عملية الضغط بالخلفية مع تمرير نوع الخوارزمية
+        //        await Task.Run(() =>
+        //        {
+        //            FileEncoder.SaveEncodedFile(outputPath, inputPaths.ToList(), algo, progressReporter);
+        //        });
+
+        //        MessageBox.Show("Compression complete.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error during compression:\n{ex.Message}");
+        //    }
+        //    finally
+        //    {
+        //        // 5. إغلاق نافذة التقدم
+        //        progressForm.AllowClose();
+        //    }
+        //}
+
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            // 1. التحقق من الملفات والمدخلات
-            string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
-            if (inputPaths.Length == 0 || inputPaths.Any(p => !File.Exists(p)))
+            // Step 1: Read input paths (files or folders)
+            string[] inputPaths = txtFilePath.Text.Split(';')
+                .Select(p => p.Trim())
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .ToArray();
+
+            if (inputPaths.Length == 0)
             {
-                MessageBox.Show("Please select valid input files.");
+                MessageBox.Show("Please select files or folders to compress.");
                 return;
             }
 
+            // Step 2: Resolve all .txt files from selected paths
+            List<string> allTxtFiles = new List<string>();
+
+            foreach (var path in inputPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    string[] txtFiles = Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories);
+                    allTxtFiles.AddRange(txtFiles);
+                }
+                else if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".txt")
+                {
+                    allTxtFiles.Add(path);
+                }
+            }
+
+            if (allTxtFiles.Count == 0)
+            {
+                MessageBox.Show("No valid .txt files found.");
+                return;
+            }
+
+            // Step 3: Validate output path
             string outputPath = txtOutputPath.Text.Trim();
             if (string.IsNullOrWhiteSpace(outputPath))
             {
@@ -191,6 +276,7 @@ namespace FileCompressor
                 return;
             }
 
+            // Step 4: Detect algorithm
             string algo = GetSelectedAlgorithm();
             if (algo == "none")
             {
@@ -198,25 +284,38 @@ namespace FileCompressor
                 return;
             }
 
-            // 2. عرض نافذة التقدم
+            // Step 5: Setup progress form
             var progressForm = new ProgressForm();
             progressForm.Show();
             progressForm.BringToFront();
-            await Task.Delay(100); // للسماح للنموذج بالعرض قبل بدء المهمة
+            await Task.Delay(100); // Let UI render before work starts
 
             try
             {
-                // 3. إعداد محدث التقدم
                 var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
                 {
                     var (fileIndex, totalFiles, percent) = data;
-                    progressForm.UpdateProgress(fileIndex, totalFiles, percent, inputPaths[fileIndex]);
+                    if (fileIndex < allTxtFiles.Count)
+                    {
+                        progressForm.UpdateProgress(fileIndex, totalFiles, percent, allTxtFiles[fileIndex]);
+                    }
                 });
 
-                // 4. تنفيذ عملية الضغط بالخلفية مع تمرير نوع الخوارزمية
                 await Task.Run(() =>
                 {
-                    FileEncoder.SaveEncodedFile(outputPath, inputPaths.ToList(), algo, progressReporter);
+                    // Determine base folder for relative path preservation
+                    string baseFolder;
+                    if (inputPaths.Length == 1 && Directory.Exists(inputPaths[0]))
+                    {
+                        baseFolder = inputPaths[0];
+                    }
+                    else
+                    {
+                        baseFolder = Path.GetDirectoryName(allTxtFiles[0]);
+                    }
+
+                    // Unified save method handles both algorithms
+                    FileEncoder.SaveEncodedFile(outputPath, allTxtFiles, algo, baseFolder, progressReporter);
                 });
 
                 MessageBox.Show("Compression complete.");
@@ -227,10 +326,11 @@ namespace FileCompressor
             }
             finally
             {
-                // 5. إغلاق نافذة التقدم
                 progressForm.AllowClose();
             }
         }
+
+
 
 
         private string GetSelectedAlgorithm()
@@ -303,6 +403,42 @@ namespace FileCompressor
                 if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
                     detxtOutputPath.Text = folderDialog.SelectedPath;
+                }
+            }
+        }
+
+
+        private void btnBrowseFolders_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.Description = "Select a folder to compress";
+
+                if (folderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string selectedFolder = folderDialog.SelectedPath;
+
+                    // Get existing paths from txtFilePath
+                    var existingPaths = txtFilePath.Text.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                    // Add the selected folder path if not already there
+                    if (!existingPaths.Contains(selectedFolder))
+                        existingPaths.Add(selectedFolder);
+
+                    // Update txtFilePath with folder paths separated by semicolon
+                    txtFilePath.Text = string.Join(";", existingPaths);
+
+                    // Set the output path based on the first selected folder
+                    if (existingPaths.Count > 0)
+                    {
+                        string firstFolder = existingPaths[0];
+                        string dir = Path.GetDirectoryName(firstFolder.TrimEnd(Path.DirectorySeparatorChar));
+                        string folderName = Path.GetFileName(firstFolder.TrimEnd(Path.DirectorySeparatorChar));
+
+                        // Compose output file name: folderName.bin inside same parent directory
+                        string archivePath = Path.Combine(dir ?? "", folderName + ".bin");
+                        txtOutputPath.Text = archivePath;
+                    }
                 }
             }
         }
@@ -385,7 +521,7 @@ namespace FileCompressor
         {
             lvArchiveContents.Items.Clear();
 
-            List<ArchiveEntry> entries =ArchiveReader. ReadArchiveIndex(archivePath);
+            List<ArchiveEntry> entries = ArchiveReader.ReadArchiveIndex(archivePath);
 
             foreach (var entry in entries)
             {
@@ -429,7 +565,7 @@ namespace FileCompressor
             // Optional (Step 6): disable decompress button if nothing is selected
             btnDecompress_Click.Enabled = selectedItems.Count > 0;
         }
-       
+
         private void RunWithProgress(Action<ProgressForm> action)
         {
             ProgressForm progressForm = new ProgressForm();

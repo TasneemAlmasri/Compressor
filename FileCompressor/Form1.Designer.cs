@@ -31,6 +31,7 @@
             txtFilePath = new TextBox();
             btnBrowse = new Button();
             groupBox1 = new GroupBox();
+            btnBrowseFolders = new Button();
             groupBox2 = new GroupBox();
             radioHuffman = new RadioButton();
             radioShannon = new RadioButton();
@@ -71,22 +72,23 @@
             txtFilePath.BackColor = SystemColors.ControlLightLight;
             txtFilePath.Location = new Point(12, 26);
             txtFilePath.Name = "txtFilePath";
-            txtFilePath.Size = new Size(368, 27);
+            txtFilePath.Size = new Size(312, 27);
             txtFilePath.TabIndex = 0;
             txtFilePath.TextChanged += txtFilePath_TextChanged;
             // 
             // btnBrowse
             // 
-            btnBrowse.Location = new Point(386, 26);
+            btnBrowse.Location = new Point(330, 26);
             btnBrowse.Name = "btnBrowse";
-            btnBrowse.Size = new Size(103, 29);
+            btnBrowse.Size = new Size(76, 29);
             btnBrowse.TabIndex = 1;
-            btnBrowse.Text = "Browse";
+            btnBrowse.Text = "Files";
             btnBrowse.UseVisualStyleBackColor = true;
             btnBrowse.Click += btnBrowse_Click;
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(btnBrowseFolders);
             groupBox1.Controls.Add(btnBrowse);
             groupBox1.Controls.Add(txtFilePath);
             groupBox1.Location = new Point(10, 16);
@@ -96,6 +98,16 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Source";
             groupBox1.Enter += groupBox1_Enter;
+            // 
+            // btnBrowseFolders
+            // 
+            btnBrowseFolders.Location = new Point(412, 26);
+            btnBrowseFolders.Name = "btnBrowseFolders";
+            btnBrowseFolders.Size = new Size(76, 29);
+            btnBrowseFolders.TabIndex = 2;
+            btnBrowseFolders.Text = "Folder";
+            btnBrowseFolders.UseVisualStyleBackColor = true;
+            btnBrowseFolders.Click += btnBrowseFolders_Click;
             // 
             // groupBox2
             // 
@@ -418,6 +430,6 @@
         private ColumnHeader colAlgorithm;
         private Button button1;
         private ListBox listArchiveContents;
-
+        private Button btnBrowseFolders;
     }
 }
