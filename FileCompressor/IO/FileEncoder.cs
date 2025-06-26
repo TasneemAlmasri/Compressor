@@ -1,127 +1,127 @@
-﻿using FileCompressorApp.Models;
-using FileCompressorApp.Compression;
+﻿using FileCompressorApp.Compression;
 using FileCompressorApp.Helpers;
+using FileCompressorApp.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace FileCompressorApp.IO
 {
     public static class FileEncoder
     {
-        //public static void SaveEncodedFile(string path, List<Symbol> symbols, string encodedBits)
-        //{
-        //    using (var stream = File.OpenWrite(path))
-        //    using (var writer = new BinaryWriter(stream))
-        //    {
-        //        writer.Write(symbols.Count);
-
-        //        foreach (var symbol in symbols)
-        //        {
-        //            writer.Write(symbol.Character);
-        //            writer.Write(symbol.Code.Length);
-
-        //            byte[] codeBytes = BitHelper.PackBits(symbol.Code);
-        //            writer.Write(codeBytes.Length);
-        //            writer.Write(codeBytes);
-        //        }
-
-        //        writer.Write(encodedBits.Length);
-        //        byte[] encodedBytes = BitHelper.PackBits(encodedBits);
-        //        writer.Write(encodedBytes.Length);
-        //        writer.Write(encodedBytes);
-        //    }
-        //}
-
-        public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths)
+        public static void SaveEncodedFile(string archivePath, List<string> inputFilePaths, string algorithm, IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
         {
             using (var stream = File.OpenWrite(archivePath))
             using (var writer = new BinaryWriter(stream))
             {
-                // Write total number of files in archive
-                writer.Write(inputFilePaths.Count);
+                int totalFiles = inputFilePaths.Count;
+                writer.Write(totalFiles);
 
-                foreach (var filePath in inputFilePaths)
+                for (int i = 0; i < totalFiles; i++)
                 {
+                    string filePath = inputFilePaths[i];
                     string fileName = Path.GetFileName(filePath);
                     string text = File.ReadAllText(filePath);
 
-                    // Build frequency table & codes
-                    List<Symbol> symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
-                   ShannonFanoCompressor.BuildCodes(symbols);
-
-                    // Encode text
-                    string encodedBits =ShannonFanoCompressor.Encode(text, symbols);
-                    byte[] encodedBytes = BitHelper.PackBits(encodedBits);
-
-                    // Write file name length and file name
                     writer.Write(fileName.Length);
                     writer.Write(System.Text.Encoding.UTF8.GetBytes(fileName));
 
-                    // Write algorithm used (for now "shannon")
-                    string algorithm = "shannon";
                     writer.Write(algorithm.Length);
                     writer.Write(System.Text.Encoding.UTF8.GetBytes(algorithm));
 
-                    // Write original file length in characters
                     writer.Write(text.Length);
 
-                    // Write number of symbols
-                    writer.Write(symbols.Count);
+                    string encodedBits = "";
+                    byte[] encodedBytes = null;
 
-                    // Write each symbol info
-                    foreach (var symbol in symbols)
+                    if (algorithm == "shannon")
                     {
-                        writer.Write(symbol.Character);
-                        writer.Write(symbol.Code.Length);
-                        byte[] codeBytes =BitHelper. PackBits(symbol.Code);
-                        writer.Write(codeBytes.Length);
-                        writer.Write(codeBytes);
+                        var symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
+                        ShannonFanoCompressor.BuildCodes(symbols);
+
+                        writer.Write(symbols.Count);
+
+                        StringBuilder builder = new StringBuilder();
+                        int totalChars = text.Length;
+
+                        for (int c = 0; c < totalChars; c++)
+                        {
+                            char ch = text[c];
+                            string code = symbols.First(s => s.Character == ch).Code;
+                            builder.Append(code);
+
+                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+                            {
+                                int percent = (int)((c + 1) / (float)totalChars * 100);
+                                progress.Report((i, totalFiles, percent));
+                                Thread.Sleep(1); // لتحديث الـ UI بوضوح
+                            }
+                        }
+
+                        encodedBits = builder.ToString();
+                        encodedBytes = BitHelper.PackBits(encodedBits);
+
+                        foreach (var symbol in symbols)
+                        {
+                            writer.Write(symbol.Character);
+                            writer.Write(symbol.Code.Length);
+                            var codeBytes = BitHelper.PackBits(symbol.Code);
+                            writer.Write(codeBytes.Length);
+                            writer.Write(codeBytes);
+                        }
+                    }
+                    else if (algorithm == "huffman")
+                    {
+                        var freqTable = HuffmanCompressor.BuildFrequencyTable(text);
+                        var root = HuffmanCompressor.BuildTree(freqTable);
+                        var codeTable = HuffmanCompressor.BuildCodeTable(root);
+
+                        writer.Write(codeTable.Count);
+
+                        StringBuilder builder = new StringBuilder();
+                        int totalChars = text.Length;
+
+                        for (int c = 0; c < totalChars; c++)
+                        {
+                            char ch = text[c];
+                            builder.Append(codeTable[ch]);
+
+                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+                            {
+                                int percent = (int)((c + 1) / (float)totalChars * 100);
+                                progress.Report((i, totalFiles, percent));
+                                Thread.Sleep(1);
+                            }
+                        }
+
+                        encodedBits = builder.ToString();
+                        encodedBytes = BitHelper.PackBits(encodedBits);
+
+                        foreach (var pair in codeTable)
+                        {
+                            writer.Write(pair.Key);
+                            writer.Write(pair.Value.Length);
+                            var codeBytes = BitHelper.PackBits(pair.Value);
+                            writer.Write(codeBytes.Length);
+                            writer.Write(codeBytes);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unsupported algorithm: " + algorithm);
                     }
 
-                    // Write length of encoded data in bits
                     writer.Write(encodedBits.Length);
-
-                    // Write length of encoded data in bytes
                     writer.Write(encodedBytes.Length);
-
-                    // Write encoded data bytes
                     writer.Write(encodedBytes);
+
+                    // تقرير التقدم النهائي لكل ملف
+                    progress?.Report((i, totalFiles, 100));
                 }
             }
         }
-
-        //public static void DecodeFile(string inputPath, string outputPath)
-        //{
-        //    using (var stream = File.OpenRead(inputPath))
-        //    using (var reader = new BinaryReader(stream))
-        //    {
-        //        int symbolCount = reader.ReadInt32();
-        //        List<Symbol> symbols = new List<Symbol>();
-
-        //        for (int i = 0; i < symbolCount; i++)
-        //        {
-        //            char ch = reader.ReadChar();
-        //            int codeLength = reader.ReadInt32();
-        //            int byteLen = reader.ReadInt32();
-        //            byte[] codeBytes = reader.ReadBytes(byteLen);
-
-        //            string code = BitHelper.UnpackBits(codeBytes, codeLength);
-        //            symbols.Add(new Symbol { Character = ch, Code = code });
-        //        }
-
-        //        int encodedBitCount = reader.ReadInt32();
-        //        int encodedByteCount = reader.ReadInt32();
-        //        byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
-
-        //        string encodedBits = BitHelper.UnpackBits(encodedBytes, encodedBitCount);
-        //        string decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols);
-
-        //        File.WriteAllText(outputPath, decodedText);
-        //        Debug.WriteLine($"Decoded file saved to: {outputPath}");
-        //    }
-        //}
-        public static void DecodeFile(string archivePath, string outputPath, List<string> filesToExtract)
+        public static void DecodeFile(string archivePath, string outputPath, List<string> filesToExtract, IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
         {
             using (var stream = File.OpenRead(archivePath))
             using (var reader = new BinaryReader(stream))
@@ -130,20 +130,19 @@ namespace FileCompressorApp.IO
 
                 for (int f = 0; f < fileCount; f++)
                 {
-                    // Read file name
                     int fileNameLength = reader.ReadInt32();
                     string fileName = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
 
-                    // Read algorithm used
                     int algoLength = reader.ReadInt32();
                     string algorithm = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(algoLength));
 
-                    // Read original text length (characters)
                     int originalLength = reader.ReadInt32();
 
-                    // Read symbols
                     int symbolCount = reader.ReadInt32();
+
+                    Dictionary<char, string> codeTable = new Dictionary<char, string>();
                     List<Symbol> symbols = new List<Symbol>();
+
                     for (int i = 0; i < symbolCount; i++)
                     {
                         char ch = reader.ReadChar();
@@ -151,29 +150,69 @@ namespace FileCompressorApp.IO
                         int codeByteLength = reader.ReadInt32();
                         byte[] codeBytes = reader.ReadBytes(codeByteLength);
                         string code = BitHelper.UnpackBits(codeBytes, codeLength);
-                        symbols.Add(new Symbol { Character = ch, Code = code });
+
+                        if (algorithm == "huffman")
+                            codeTable[ch] = code;
+                        else
+                            symbols.Add(new Symbol { Character = ch, Code = code });
                     }
 
-                    // Read encoded data lengths
                     int encodedBitCount = reader.ReadInt32();
                     int encodedByteCount = reader.ReadInt32();
                     byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
-                    string encodedBits =BitHelper.UnpackBits(encodedBytes, encodedBitCount);
+                    string encodedBits = BitHelper.UnpackBits(encodedBytes, encodedBitCount);
 
                     if (filesToExtract.Contains(fileName))
                     {
-                        string decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols);
+                        string decodedText = "";
+
+                        if (algorithm == "huffman")
+                        {
+                            HuffmanNode root = RebuildHuffmanTree(codeTable);
+                            StringBuilder decodedBuilder = new StringBuilder();
+                            HuffmanNode current = root;
+                            int totalBits = encodedBits.Length;
+
+                            for (int i = 0; i < totalBits; i++)
+                            {
+                                char bit = encodedBits[i];
+                                current = (bit == '0') ? current.Left : current.Right;
+
+                                if (current.Left == null && current.Right == null)
+                                {
+                                    decodedBuilder.Append(current.Character);
+                                    current = root;
+                                }
+
+                                if (progress != null && (i % 100 == 0 || i == totalBits - 1))
+                                {
+                                    int percent = (int)((i + 1) / (float)totalBits * 100);
+                                    progress.Report((f, fileCount, percent));
+                                }
+                            }
+
+                            decodedText = decodedBuilder.ToString();
+                        }
+                        else if (algorithm == "shannon")
+                        {
+                            var progressForFile = new Progress<int>(percent =>
+                            {
+                                progress?.Report((f, fileCount, percent));
+                            });
+                            decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile);
+                        }
+                        else
+                        {
+                            throw new Exception("Unsupported algorithm: " + algorithm);
+                        }
 
                         string outputFilePath;
-
                         if (filesToExtract.Count == 1 && !Directory.Exists(outputPath))
                         {
-                            // Single file output, outputPath is file path
                             outputFilePath = outputPath;
                         }
                         else
                         {
-                            // Multiple files output, outputPath is folder path
                             if (!Directory.Exists(outputPath))
                                 Directory.CreateDirectory(outputPath);
 
@@ -183,33 +222,15 @@ namespace FileCompressorApp.IO
                         File.WriteAllText(outputFilePath, decodedText);
                         Debug.WriteLine($"Extracted: {outputFilePath}");
                     }
+                    else
+                    {
+                        progress?.Report((f, fileCount, 100));
+                    }
                 }
             }
         }
 
-        public static void SaveEncodedFileHuffman(string path, Dictionary<char, string> codeTable, string encodedBits)
-        {
-            using (var stream = File.OpenWrite(path))
-            using (var writer = new BinaryWriter(stream))
-            {
-                writer.Write(codeTable.Count);
 
-                foreach (var entry in codeTable)
-                {
-                    writer.Write(entry.Key);                 // character
-                    writer.Write(entry.Value.Length);        // code length
-
-                    byte[] codeBytes = BitHelper.PackBits(entry.Value);
-                    writer.Write(codeBytes.Length);          // byte count
-                    writer.Write(codeBytes);                 // packed code
-                }
-
-                writer.Write(encodedBits.Length);
-                byte[] encodedBytes = BitHelper.PackBits(encodedBits);
-                writer.Write(encodedBytes.Length);
-                writer.Write(encodedBytes);
-            }
-        }
         private static HuffmanNode RebuildHuffmanTree(Dictionary<char, string> codeTable)
         {
             HuffmanNode root = new HuffmanNode();
@@ -242,39 +263,6 @@ namespace FileCompressorApp.IO
             return root;
         }
 
-        public static void DecodeFileHuffman(string inputPath, string outputPath)
-        {
-            using (var stream = File.OpenRead(inputPath))
-            using (var reader = new BinaryReader(stream))
-            {
-                int symbolCount = reader.ReadInt32();
-                Dictionary<char, string> codeTable = new Dictionary<char, string>();
-
-                for (int i = 0; i < symbolCount; i++)
-                {
-                    char ch = reader.ReadChar();
-                    int codeLength = reader.ReadInt32();
-                    int byteLen = reader.ReadInt32();
-                    byte[] codeBytes = reader.ReadBytes(byteLen);
-                    string code = BitHelper.UnpackBits(codeBytes, codeLength);
-
-                    codeTable[ch] = code;
-                }
-
-                int encodedBitCount = reader.ReadInt32();
-                int encodedByteCount = reader.ReadInt32();
-                byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
-
-                string encodedBits = BitHelper.UnpackBits(encodedBytes, encodedBitCount);
-
-                // إعادة بناء الشجرة
-                HuffmanNode root = RebuildHuffmanTree(codeTable);
-                string decodedText = HuffmanCompressor.Decode(encodedBits, root);
-
-                File.WriteAllText(outputPath, decodedText);
-                Debug.WriteLine($"Decoded Huffman file saved to: {outputPath}");
-            }
-        }
-
+  
     }
 }

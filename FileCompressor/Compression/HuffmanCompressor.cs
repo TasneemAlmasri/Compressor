@@ -101,24 +101,52 @@
             return encoded.ToString();
         }
 
-        public static string Decode(string encodedBits, HuffmanNode root)
+        //public static string Decode(string encodedBits, HuffmanNode root)
+        //{
+        //    StringBuilder decoded = new StringBuilder();
+        //    HuffmanNode current = root;
+
+        //    foreach (char bit in encodedBits)
+        //    {
+        //        if (bit == '0')
+        //            current = current.Left;
+        //        else if (bit == '1')
+        //            current = current.Right;
+        //        else
+        //            throw new Exception("Invalid bit in encoded string.");
+
+        //        if (current.IsLeaf)
+        //        {
+        //            decoded.Append(current.Character);
+        //            current = root; // نرجع للجذر بعد كل حرف
+        //        }
+        //    }
+
+        //    return decoded.ToString();
+        //}
+        public static string Decode(string encodedBits, HuffmanNode root, IProgress<int> progress = null)
         {
             StringBuilder decoded = new StringBuilder();
             HuffmanNode current = root;
+            int totalBits = encodedBits.Length;
+            int reportInterval = Math.Max(totalBits / 100, 1);
 
-            foreach (char bit in encodedBits)
+            for (int i = 0; i < totalBits; i++)
             {
-                if (bit == '0')
-                    current = current.Left;
-                else if (bit == '1')
-                    current = current.Right;
-                else
-                    throw new Exception("Invalid bit in encoded string.");
+                current = encodedBits[i] == '0' ? current.Left : current.Right;
 
                 if (current.IsLeaf)
                 {
                     decoded.Append(current.Character);
-                    current = root; // نرجع للجذر بعد كل حرف
+                    current = root;
+                }
+
+                if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
+                {
+                    int percent = (int)((i + 1L) * 100 / totalBits);
+                    progress.Report(percent);
+                    Application.DoEvents();
+                    Thread.Sleep(1);
                 }
             }
 

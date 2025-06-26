@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace FileCompressorApp.Compression
 {
@@ -64,23 +65,54 @@ namespace FileCompressorApp.Compression
             return string.Concat(text.Select(c => codeMap[c]));
         }
 
-        public static string Decode(string encoded, List<Symbol> symbols)
+        //public static string Decode(string encoded, List<Symbol> symbols)
+        //{
+        //    var reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
+        //    string result = "";
+        //    string buffer = "";
+
+        //    foreach (char bit in encoded)
+        //    {
+        //        buffer += bit;
+        //        if (reverseMap.ContainsKey(buffer))
+        //        {
+        //            result += reverseMap[buffer];
+        //            buffer = "";
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
+        public static string Decode(string encoded, List<Symbol> symbols, IProgress<int> progress = null)
         {
             var reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
-            string result = "";
+            StringBuilder result = new StringBuilder();
             string buffer = "";
+            int totalBits = encoded.Length;
+            int reportInterval = Math.Max(totalBits / 100, 1);
 
-            foreach (char bit in encoded)
+            for (int i = 0; i < totalBits; i++)
             {
-                buffer += bit;
+                buffer += encoded[i];
                 if (reverseMap.ContainsKey(buffer))
                 {
-                    result += reverseMap[buffer];
+                    result.Append(reverseMap[buffer]);
                     buffer = "";
+                }
+
+                if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
+                {
+                    int percent = (int)((i + 1L) * 100 / totalBits);
+                    progress.Report(percent);
+                    Application.DoEvents();
+                    Thread.Sleep(1);
                 }
             }
 
-            return result;
+            return result.ToString();
         }
+
+
     }
 }
