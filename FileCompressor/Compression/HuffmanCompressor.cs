@@ -87,19 +87,78 @@
             Traverse(root, "");
             return table;
         }
-
-        public static string Encode(string text, Dictionary<char, string> codeTable)
+        public static string Encode(string text, Dictionary<char, string> codeTable, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
         {
             StringBuilder encoded = new StringBuilder();
-            foreach (char c in text)
+            int totalChars = text.Length;
+            int reportInterval = Math.Max(totalChars / 100, 1);
+
+            for (int i = 0; i < totalChars; i++)
             {
+                token.ThrowIfCancellationRequested();
+                pauseEvent.Wait();
+
+                char c = text[i];
                 if (codeTable.ContainsKey(c))
                     encoded.Append(codeTable[c]);
                 else
                     throw new Exception($"Character '{c}' not found in code table.");
+
+                if (progress != null && (i % reportInterval == 0 || i == totalChars - 1))
+                {
+                    int percent = (int)((i + 1) * 100 / totalChars);
+                    progress.Report(percent);
+                    Application.DoEvents();
+                    Thread.Sleep(1);
+                }
             }
+
             return encoded.ToString();
         }
+        public static string Decode(string encodedBits, HuffmanNode root, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
+        {
+            StringBuilder decoded = new StringBuilder();
+            HuffmanNode current = root;
+            int totalBits = encodedBits.Length;
+            int reportInterval = Math.Max(totalBits / 100, 1);
+
+            for (int i = 0; i < totalBits; i++)
+            {
+                token.ThrowIfCancellationRequested();
+                pauseEvent.Wait();
+
+                current = encodedBits[i] == '0' ? current.Left : current.Right;
+
+                if (current.IsLeaf)
+                {
+                    decoded.Append(current.Character);
+                    current = root;
+                }
+
+                if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
+                {
+                    int percent = (int)((i + 1L) * 100 / totalBits);
+                    progress.Report(percent);
+                    Application.DoEvents();
+                    Thread.Sleep(1);
+                }
+            }
+
+            return decoded.ToString();
+        }
+
+        //public static string Encode(string text, Dictionary<char, string> codeTable)
+        //{
+        //    StringBuilder encoded = new StringBuilder();
+        //    foreach (char c in text)
+        //    {
+        //        if (codeTable.ContainsKey(c))
+        //            encoded.Append(codeTable[c]);
+        //        else
+        //            throw new Exception($"Character '{c}' not found in code table.");
+        //    }
+        //    return encoded.ToString();
+        //}
 
         //public static string Decode(string encodedBits, HuffmanNode root)
         //{
@@ -124,34 +183,34 @@
 
         //    return decoded.ToString();
         //}
-        public static string Decode(string encodedBits, HuffmanNode root, IProgress<int> progress = null)
-        {
-            StringBuilder decoded = new StringBuilder();
-            HuffmanNode current = root;
-            int totalBits = encodedBits.Length;
-            int reportInterval = Math.Max(totalBits / 100, 1);
+        //public static string Decode(string encodedBits, HuffmanNode root, IProgress<int> progress = null)
+        //{
+        //    StringBuilder decoded = new StringBuilder();
+        //    HuffmanNode current = root;
+        //    int totalBits = encodedBits.Length;
+        //    int reportInterval = Math.Max(totalBits / 100, 1);
 
-            for (int i = 0; i < totalBits; i++)
-            {
-                current = encodedBits[i] == '0' ? current.Left : current.Right;
+        //    for (int i = 0; i < totalBits; i++)
+        //    {
+        //        current = encodedBits[i] == '0' ? current.Left : current.Right;
 
-                if (current.IsLeaf)
-                {
-                    decoded.Append(current.Character);
-                    current = root;
-                }
+        //        if (current.IsLeaf)
+        //        {
+        //            decoded.Append(current.Character);
+        //            current = root;
+        //        }
 
-                if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
-                {
-                    int percent = (int)((i + 1L) * 100 / totalBits);
-                    progress.Report(percent);
-                    Application.DoEvents();
-                    Thread.Sleep(1);
-                }
-            }
+        //        if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
+        //        {
+        //            int percent = (int)((i + 1L) * 100 / totalBits);
+        //            progress.Report(percent);
+        //            Application.DoEvents();
+        //            Thread.Sleep(1);
+        //        }
+        //    }
 
-            return decoded.ToString();
-        }
+        //    return decoded.ToString();
+        //}
 
     }
 }

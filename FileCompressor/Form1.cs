@@ -230,6 +230,104 @@ namespace FileCompressor
         //        // 5. إغلاق نافذة التقدم
         //        progressForm.AllowClose();
         //    }
+        ////}
+
+        //private async void btnStart_Click(object sender, EventArgs e)
+        //{
+        //    // Step 1: Read input paths (files or folders)
+        //    string[] inputPaths = txtFilePath.Text.Split(';')
+        //        .Select(p => p.Trim())
+        //        .Where(p => !string.IsNullOrWhiteSpace(p))
+        //        .ToArray();
+
+        //    if (inputPaths.Length == 0)
+        //    {
+        //        MessageBox.Show("Please select files or folders to compress.");
+        //        return;
+        //    }
+
+        //    // Step 2: Resolve all .txt files from selected paths
+        //    List<string> allTxtFiles = new List<string>();
+
+        //    foreach (var path in inputPaths)
+        //    {
+        //        if (Directory.Exists(path))
+        //        {
+        //            string[] txtFiles = Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories);
+        //            allTxtFiles.AddRange(txtFiles);
+        //        }
+        //        else if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".txt")
+        //        {
+        //            allTxtFiles.Add(path);
+        //        }
+        //    }
+
+        //    if (allTxtFiles.Count == 0)
+        //    {
+        //        MessageBox.Show("No valid .txt files found.");
+        //        return;
+        //    }
+
+        //    // Step 3: Validate output path
+        //    string outputPath = txtOutputPath.Text.Trim();
+        //    if (string.IsNullOrWhiteSpace(outputPath))
+        //    {
+        //        MessageBox.Show("Please select an output file path.");
+        //        return;
+        //    }
+
+        //    // Step 4: Detect algorithm
+        //    string algo = GetSelectedAlgorithm();
+        //    if (algo == "none")
+        //    {
+        //        MessageBox.Show("Please select a compression algorithm.");
+        //        return;
+        //    }
+
+        //    // Step 5: Setup progress form
+        //    var progressForm = new ProgressForm();
+        //    progressForm.Show();
+        //    progressForm.BringToFront();
+        //    await Task.Delay(100); // Let UI render before work starts
+
+        //    try
+        //    {
+        //        var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
+        //        {
+        //            var (fileIndex, totalFiles, percent) = data;
+        //            if (fileIndex < allTxtFiles.Count)
+        //            {
+        //                progressForm.UpdateProgress(fileIndex, totalFiles, percent, allTxtFiles[fileIndex]);
+        //            }
+        //        });
+
+        //        await Task.Run(() =>
+        //        {
+        //            // Determine base folder for relative path preservation
+        //            string baseFolder;
+        //            if (inputPaths.Length == 1 && Directory.Exists(inputPaths[0]))
+        //            {
+        //                baseFolder = inputPaths[0];
+        //            }
+        //            else
+        //            {
+        //                baseFolder = Path.GetDirectoryName(allTxtFiles[0]);
+        //            }
+
+        //            // Unified save method handles both algorithms
+        //            FileEncoder.SaveEncodedFile(outputPath, allTxtFiles, algo, baseFolder, progressReporter);
+        //        });
+
+        //        MessageBox.Show("Compression complete.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error during compression:\n{ex.Message}");
+        //    }
+        //    finally
+        //    {
+        //        progressForm.AllowClose();
+        //    }
         //}
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -284,7 +382,7 @@ namespace FileCompressor
                 return;
             }
 
-            // Step 5: Setup progress form
+            // Step 5: Setup progress form (includes Pause/Cancel tokens)
             var progressForm = new ProgressForm();
             progressForm.Show();
             progressForm.BringToFront();
@@ -292,6 +390,7 @@ namespace FileCompressor
 
             try
             {
+                // Step 6: Setup progress reporter
                 var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
                 {
                     var (fileIndex, totalFiles, percent) = data;
@@ -301,24 +400,37 @@ namespace FileCompressor
                     }
                 });
 
+                List<string> compressionReport = null;
+
                 await Task.Run(() =>
                 {
-                    // Determine base folder for relative path preservation
-                    string baseFolder;
-                    if (inputPaths.Length == 1 && Directory.Exists(inputPaths[0]))
-                    {
-                        baseFolder = inputPaths[0];
-                    }
-                    else
-                    {
-                        baseFolder = Path.GetDirectoryName(allTxtFiles[0]);
-                    }
+                    string baseFolder = (inputPaths.Length == 1 && Directory.Exists(inputPaths[0]))
+                        ? inputPaths[0]
+                        : Path.GetDirectoryName(allTxtFiles[0]);
 
-                    // Unified save method handles both algorithms
-                    FileEncoder.SaveEncodedFile(outputPath, allTxtFiles, algo, baseFolder, progressReporter);
+                    // ⏸️⛔ Pass pause/cancel tokens
+                    compressionReport = FileEncoder.SaveEncodedFile(
+                        archivePath: outputPath,
+                        inputFilePaths: allTxtFiles,
+                        algorithm: algo,
+                        token: progressForm.Token,
+                        pauseEvent: progressForm.PauseEvent,
+                        baseFolder: baseFolder,
+                        progress: progressReporter
+                    );
                 });
 
-                MessageBox.Show("Compression complete.");
+                // ✅ Show compression ratio report
+                MessageBox.Show("📦 Compression Summary:\n\n" + string.Join("\n", compressionReport));
+            }
+            catch (OperationCanceledException)
+            {
+                if (File.Exists(outputPath))
+                {
+                    try { File.Delete(outputPath); }
+                    catch { /* ممكن تسجل الخطأ فقط */ }
+                }
+                MessageBox.Show("Compression was cancelled.");
             }
             catch (Exception ex)
             {
@@ -329,8 +441,6 @@ namespace FileCompressor
                 progressForm.AllowClose();
             }
         }
-
-
 
 
         private string GetSelectedAlgorithm()
@@ -484,7 +594,7 @@ namespace FileCompressor
             progressForm.Show();
             progressForm.BringToFront();
 
-            await Task.Delay(100); // للسماح للنموذج بالظهور قبل بدء المهمة
+            await Task.Delay(100); // Let UI render before starting work
 
             try
             {
@@ -493,16 +603,31 @@ namespace FileCompressor
                     var (fileIndex, totalFiles, percent) = progress;
                     string fileName = fileIndex < selectedFileNames.Count ? selectedFileNames[fileIndex] : "Processing...";
                     progressForm.UpdateProgress(fileIndex, totalFiles, percent, fileName);
-
                 });
 
                 await Task.Run(() =>
                 {
-                    // استخدم دالة فك الضغط الموحدة التي تدعم التقدم، مثلا:
-                    FileEncoder.DecodeFile(inputArchive, outputPath, selectedFileNames, progressReporter);
+                    // Pass CancellationToken and PauseEvent from ProgressForm
+                    FileEncoder.DecodeFile(
+                        archivePath: inputArchive,
+                        outputPath: outputPath,
+                        filesToExtract: selectedFileNames,
+                        progress: progressReporter,
+                        token: progressForm.Token,
+                        pauseEvent: progressForm.PauseEvent
+                    );
                 });
 
                 MessageBox.Show("Decompression complete.");
+            }
+            catch (OperationCanceledException)
+            {
+                if (Directory.Exists(outputPath))
+                {
+                    try { Directory.Delete(outputPath, true); }
+                    catch { /* سجل فقط */ }
+                }
+                MessageBox.Show("Decompression was cancelled.");
             }
             catch (Exception ex)
             {

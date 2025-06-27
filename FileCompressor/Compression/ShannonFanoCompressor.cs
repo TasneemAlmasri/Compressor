@@ -59,11 +59,11 @@ namespace FileCompressorApp.Compression
             RecursiveSplit(symbols);
         }
 
-        public static string Encode(string text, List<Symbol> symbols)
-        {
-            var codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
-            return string.Concat(text.Select(c => codeMap[c]));
-        }
+        //public static string Encode(string text, List<Symbol> symbols)
+        //{
+        //    var codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
+        //    return string.Concat(text.Select(c => codeMap[c]));
+        //}
 
         //public static string Decode(string encoded, List<Symbol> symbols)
         //{
@@ -83,8 +83,38 @@ namespace FileCompressorApp.Compression
 
         //    return result;
         //}
+        public static string Encode(string text, List<Symbol> symbols, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
+        {
+            var codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
+            StringBuilder encodedBuilder = new StringBuilder();
 
-        public static string Decode(string encoded, List<Symbol> symbols, IProgress<int> progress = null)
+            int totalChars = text.Length;
+            int reportInterval = Math.Max(totalChars / 100, 1);
+
+            for (int i = 0; i < totalChars; i++)
+            {
+                token.ThrowIfCancellationRequested();
+                pauseEvent.Wait();
+
+                char c = text[i];
+                if (!codeMap.ContainsKey(c))
+                    throw new Exception($"Character '{c}' not found in code map.");
+
+                encodedBuilder.Append(codeMap[c]);
+
+                if (progress != null && (i % reportInterval == 0 || i == totalChars - 1))
+                {
+                    int percent = (int)((i + 1) * 100 / totalChars);
+                    progress.Report(percent);
+                    Application.DoEvents();
+                    Thread.Sleep(1);
+                }
+            }
+
+            return encodedBuilder.ToString();
+        }
+
+        public static string Decode(string encoded, List<Symbol> symbols, IProgress<int> progress = null, CancellationToken token = default, ManualResetEventSlim pauseEvent = null)
         {
             var reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
             StringBuilder result = new StringBuilder();
@@ -94,6 +124,9 @@ namespace FileCompressorApp.Compression
 
             for (int i = 0; i < totalBits; i++)
             {
+                token.ThrowIfCancellationRequested();
+                if (pauseEvent != null) pauseEvent.Wait();
+
                 buffer += encoded[i];
                 if (reverseMap.ContainsKey(buffer))
                 {

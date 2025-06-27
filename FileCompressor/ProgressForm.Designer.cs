@@ -24,82 +24,83 @@ namespace FileCompressor
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-
-            this.progressBar = new ProgressBar();
-            this.labelStatus = new Label();
-            this.lblCurrentFile = new Label();
-            this.btnPause = new Button();
-            this.btnResume = new Button();
-            this.btnCancel = new Button();
-
-            this.SuspendLayout();
-
-            // lblCurrentFile
-            this.lblCurrentFile.Location = new Point(20, 15);
-            this.lblCurrentFile.Name = "lblCurrentFile";
-            this.lblCurrentFile.Size = new Size(440, 20);
-            this.lblCurrentFile.TabIndex = 5;
-            this.lblCurrentFile.Text = "Current File: ";
-            this.lblCurrentFile.AutoSize = false;
-
+            progressBar = new ProgressBar();
+            labelStatus = new Label();
+            lblCurrentFile = new Label();
+            btnPause = new Button();
+            btnResume = new Button();
+            btnCancel = new Button();
+            SuspendLayout();
+            // 
             // progressBar
-            this.progressBar.Location = new Point(20, 45);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new Size(440, 23);
-            this.progressBar.Minimum = 0;
-            this.progressBar.Maximum = 100;
-            this.progressBar.Style = ProgressBarStyle.Continuous;
-            this.progressBar.TabIndex = 4;
-
+            // 
+            progressBar.Location = new Point(20, 45);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(440, 23);
+            progressBar.Style = ProgressBarStyle.Continuous;
+            progressBar.TabIndex = 4;
+            // 
             // labelStatus
-            this.labelStatus.Location = new Point(20, 75);
-            this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new Size(440, 20);
-            this.labelStatus.TabIndex = 3;
-            this.labelStatus.Text = "Status...";
-
+            // 
+            labelStatus.Location = new Point(20, 75);
+            labelStatus.Name = "labelStatus";
+            labelStatus.Size = new Size(440, 20);
+            labelStatus.TabIndex = 3;
+            labelStatus.Text = "Status...";
+            // 
+            // lblCurrentFile
+            // 
+            lblCurrentFile.Location = new Point(20, 15);
+            lblCurrentFile.Name = "lblCurrentFile";
+            lblCurrentFile.Size = new Size(440, 20);
+            lblCurrentFile.TabIndex = 5;
+            lblCurrentFile.Text = "Current File: ";
+            // 
             // btnPause
-            this.btnPause.Location = new Point(40, 105);
-            this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new Size(100, 30);
-            this.btnPause.TabIndex = 2;
-            this.btnPause.Text = "Pause";
-            this.btnPause.UseVisualStyleBackColor = true;
-
+            // 
+            btnPause.Location = new Point(40, 105);
+            btnPause.Name = "btnPause";
+            btnPause.Size = new Size(100, 30);
+            btnPause.TabIndex = 2;
+            btnPause.Text = "Pause";
+            btnPause.UseVisualStyleBackColor = true;
+            btnPause.Click += btnPause_Click;
+            // 
             // btnResume
-            this.btnResume.Location = new Point(160, 105);
-            this.btnResume.Name = "btnResume";
-            this.btnResume.Size = new Size(100, 30);
-            this.btnResume.TabIndex = 1;
-            this.btnResume.Text = "Resume";
-            this.btnResume.UseVisualStyleBackColor = true;
-            this.btnResume.Enabled = false;
-
+            // 
+            btnResume.Enabled = false;
+            btnResume.Location = new Point(160, 105);
+            btnResume.Name = "btnResume";
+            btnResume.Size = new Size(100, 30);
+            btnResume.TabIndex = 1;
+            btnResume.Text = "Resume";
+            btnResume.UseVisualStyleBackColor = true;
+            // 
             // btnCancel
-            this.btnCancel.Location = new Point(280, 105);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new Size(100, 30);
-            this.btnCancel.TabIndex = 0;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-
+            // 
+            btnCancel.Location = new Point(280, 105);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(100, 30);
+            btnCancel.TabIndex = 0;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            // 
             // ProgressForm
-            this.ClientSize = new Size(480, 150);
-            this.Controls.Add(this.lblCurrentFile);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnResume);
-            this.Controls.Add(this.btnPause);
-            this.Controls.Add(this.labelStatus);
-            this.Controls.Add(this.progressBar);
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ProgressForm";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "Compression Progress";
-
-            this.ResumeLayout(false);
+            // 
+            ClientSize = new Size(480, 150);
+            Controls.Add(lblCurrentFile);
+            Controls.Add(btnCancel);
+            Controls.Add(btnResume);
+            Controls.Add(btnPause);
+            Controls.Add(labelStatus);
+            Controls.Add(progressBar);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "ProgressForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Compression Progress";
+            ResumeLayout(false);
         }
     }
 }

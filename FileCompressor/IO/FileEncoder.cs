@@ -122,126 +122,126 @@ namespace FileCompressorApp.IO
         //    }
         //}
 
-        public static void SaveEncodedFile(
-            string archivePath,
-            List<string> inputFilePaths,
-            string algorithm,
-            string baseFolder = null,
-            IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
-        {
-            using (var stream = File.OpenWrite(archivePath))
-            using (var writer = new BinaryWriter(stream))
-            {
-                int totalFiles = inputFilePaths.Count;
-                writer.Write(totalFiles);
+        //public static void SaveEncodedFile(
+        //    string archivePath,
+        //    List<string> inputFilePaths,
+        //    string algorithm,
+        //    string baseFolder = null,
+        //    IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
+        //{
+        //    using (var stream = File.OpenWrite(archivePath))
+        //    using (var writer = new BinaryWriter(stream))
+        //    {
+        //        int totalFiles = inputFilePaths.Count;
+        //        writer.Write(totalFiles);
 
-                for (int i = 0; i < totalFiles; i++)
-                {
-                    string filePath = inputFilePaths[i];
-                    string text = File.ReadAllText(filePath);
+        //        for (int i = 0; i < totalFiles; i++)
+        //        {
+        //            string filePath = inputFilePaths[i];
+        //            string text = File.ReadAllText(filePath);
 
-                    // Compute relative path if baseFolder is provided (for folder structure)
-                    string relativePath = !string.IsNullOrEmpty(baseFolder)
-                        ? Path.GetRelativePath(baseFolder, filePath)
-                        : Path.GetFileName(filePath);
+        //            // Compute relative path if baseFolder is provided (for folder structure)
+        //            string relativePath = !string.IsNullOrEmpty(baseFolder)
+        //                ? Path.GetRelativePath(baseFolder, filePath)
+        //                : Path.GetFileName(filePath);
 
-                    // Write file name (relative path or flat)
-                    writer.Write(relativePath.Length);
-                    writer.Write(Encoding.UTF8.GetBytes(relativePath));
+        //            // Write file name (relative path or flat)
+        //            writer.Write(relativePath.Length);
+        //            writer.Write(Encoding.UTF8.GetBytes(relativePath));
 
-                    // Write algorithm
-                    writer.Write(algorithm.Length);
-                    writer.Write(Encoding.UTF8.GetBytes(algorithm));
+        //            // Write algorithm
+        //            writer.Write(algorithm.Length);
+        //            writer.Write(Encoding.UTF8.GetBytes(algorithm));
 
-                    // Write original size
-                    writer.Write(text.Length);
+        //            // Write original size
+        //            writer.Write(text.Length);
 
-                    string encodedBits = "";
-                    byte[] encodedBytes = null;
+        //            string encodedBits = "";
+        //            byte[] encodedBytes = null;
 
-                    if (algorithm == "shannon")
-                    {
-                        var symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
-                        ShannonFanoCompressor.BuildCodes(symbols);
-                        writer.Write(symbols.Count);
+        //            if (algorithm == "shannon")
+        //            {
+        //                var symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
+        //                ShannonFanoCompressor.BuildCodes(symbols);
+        //                writer.Write(symbols.Count);
 
-                        StringBuilder builder = new StringBuilder();
-                        int totalChars = text.Length;
+        //                StringBuilder builder = new StringBuilder();
+        //                int totalChars = text.Length;
 
-                        for (int c = 0; c < totalChars; c++)
-                        {
-                            char ch = text[c];
-                            string code = symbols.First(s => s.Character == ch).Code;
-                            builder.Append(code);
+        //                for (int c = 0; c < totalChars; c++)
+        //                {
+        //                    char ch = text[c];
+        //                    string code = symbols.First(s => s.Character == ch).Code;
+        //                    builder.Append(code);
 
-                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
-                            {
-                                int percent = (int)((c + 1) / (float)totalChars * 100);
-                                progress.Report((i, totalFiles, percent));
-                                Thread.Sleep(1); // For UI smoothness
-                            }
-                        }
+        //                    if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+        //                    {
+        //                        int percent = (int)((c + 1) / (float)totalChars * 100);
+        //                        progress.Report((i, totalFiles, percent));
+        //                        Thread.Sleep(1); // For UI smoothness
+        //                    }
+        //                }
 
-                        encodedBits = builder.ToString();
-                        encodedBytes = BitHelper.PackBits(encodedBits);
+        //                encodedBits = builder.ToString();
+        //                encodedBytes = BitHelper.PackBits(encodedBits);
 
-                        foreach (var symbol in symbols)
-                        {
-                            writer.Write(symbol.Character);
-                            writer.Write(symbol.Code.Length);
-                            var codeBytes = BitHelper.PackBits(symbol.Code);
-                            writer.Write(codeBytes.Length);
-                            writer.Write(codeBytes);
-                        }
-                    }
-                    else if (algorithm == "huffman")
-                    {
-                        var freqTable = HuffmanCompressor.BuildFrequencyTable(text);
-                        var root = HuffmanCompressor.BuildTree(freqTable);
-                        var codeTable = HuffmanCompressor.BuildCodeTable(root);
-                        writer.Write(codeTable.Count);
+        //                foreach (var symbol in symbols)
+        //                {
+        //                    writer.Write(symbol.Character);
+        //                    writer.Write(symbol.Code.Length);
+        //                    var codeBytes = BitHelper.PackBits(symbol.Code);
+        //                    writer.Write(codeBytes.Length);
+        //                    writer.Write(codeBytes);
+        //                }
+        //            }
+        //            else if (algorithm == "huffman")
+        //            {
+        //                var freqTable = HuffmanCompressor.BuildFrequencyTable(text);
+        //                var root = HuffmanCompressor.BuildTree(freqTable);
+        //                var codeTable = HuffmanCompressor.BuildCodeTable(root);
+        //                writer.Write(codeTable.Count);
 
-                        StringBuilder builder = new StringBuilder();
-                        int totalChars = text.Length;
+        //                StringBuilder builder = new StringBuilder();
+        //                int totalChars = text.Length;
 
-                        for (int c = 0; c < totalChars; c++)
-                        {
-                            char ch = text[c];
-                            builder.Append(codeTable[ch]);
+        //                for (int c = 0; c < totalChars; c++)
+        //                {
+        //                    char ch = text[c];
+        //                    builder.Append(codeTable[ch]);
 
-                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
-                            {
-                                int percent = (int)((c + 1) / (float)totalChars * 100);
-                                progress.Report((i, totalFiles, percent));
-                                Thread.Sleep(1);
-                            }
-                        }
+        //                    if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+        //                    {
+        //                        int percent = (int)((c + 1) / (float)totalChars * 100);
+        //                        progress.Report((i, totalFiles, percent));
+        //                        Thread.Sleep(1);
+        //                    }
+        //                }
 
-                        encodedBits = builder.ToString();
-                        encodedBytes = BitHelper.PackBits(encodedBits);
+        //                encodedBits = builder.ToString();
+        //                encodedBytes = BitHelper.PackBits(encodedBits);
 
-                        foreach (var pair in codeTable)
-                        {
-                            writer.Write(pair.Key);
-                            writer.Write(pair.Value.Length);
-                            var codeBytes = BitHelper.PackBits(pair.Value);
-                            writer.Write(codeBytes.Length);
-                            writer.Write(codeBytes);
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Unsupported algorithm: " + algorithm);
-                    }
+        //                foreach (var pair in codeTable)
+        //                {
+        //                    writer.Write(pair.Key);
+        //                    writer.Write(pair.Value.Length);
+        //                    var codeBytes = BitHelper.PackBits(pair.Value);
+        //                    writer.Write(codeBytes.Length);
+        //                    writer.Write(codeBytes);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                throw new InvalidOperationException("Unsupported algorithm: " + algorithm);
+        //            }
 
-                    writer.Write(encodedBits.Length);
-                    writer.Write(encodedBytes.Length);
-                    writer.Write(encodedBytes);
+        //            writer.Write(encodedBits.Length);
+        //            writer.Write(encodedBytes.Length);
+        //            writer.Write(encodedBytes);
 
-                    progress?.Report((i, totalFiles, 100)); // Final report for the file
-                }
-            }
-        }
+        //            progress?.Report((i, totalFiles, 100)); // Final report for the file
+        //        }
+        //    }
+        //}
 
         //public static void DecodeFile(string archivePath, string outputPath, List<string> filesToExtract, IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
         //{
@@ -351,11 +351,152 @@ namespace FileCompressorApp.IO
         //        }
         //    }
         //}
+
+        public static List<string> SaveEncodedFile(
+     string archivePath,
+     List<string> inputFilePaths,
+     string algorithm,
+     CancellationToken token,
+     ManualResetEventSlim pauseEvent,
+     string baseFolder = null,
+     IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
+        {
+            List<string> compressionSummaries = new List<string>();
+
+            using (var stream = File.OpenWrite(archivePath))
+            using (var writer = new BinaryWriter(stream))
+            {
+                int totalFiles = inputFilePaths.Count;
+                writer.Write(totalFiles);
+
+                for (int i = 0; i < totalFiles; i++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    pauseEvent.Wait();
+
+                    string filePath = inputFilePaths[i];
+                    string text = File.ReadAllText(filePath);
+
+                    string relativePath = !string.IsNullOrEmpty(baseFolder)
+                        ? Path.GetRelativePath(baseFolder, filePath)
+                        : Path.GetFileName(filePath);
+
+                    writer.Write(relativePath.Length);
+                    writer.Write(Encoding.UTF8.GetBytes(relativePath));
+
+                    writer.Write(algorithm.Length);
+                    writer.Write(Encoding.UTF8.GetBytes(algorithm));
+
+                    writer.Write(text.Length);
+
+                    string encodedBits = "";
+                    byte[] encodedBytes = null;
+
+                    if (algorithm == "shannon")
+                    {
+                        var symbols = ShannonFanoCompressor.BuildFrequencyTable(text);
+                        ShannonFanoCompressor.BuildCodes(symbols);
+                        writer.Write(symbols.Count);
+
+                        StringBuilder builder = new StringBuilder();
+                        int totalChars = text.Length;
+
+                        for (int c = 0; c < totalChars; c++)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            pauseEvent.Wait();
+
+                            char ch = text[c];
+                            string code = symbols.First(s => s.Character == ch).Code;
+                            builder.Append(code);
+
+                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+                            {
+                                int percent = (int)((c + 1) / (float)totalChars * 100);
+                                progress.Report((i, totalFiles, percent));
+                                Thread.Sleep(1);
+                            }
+                        }
+
+                        encodedBits = builder.ToString();
+                        encodedBytes = BitHelper.PackBits(encodedBits);
+
+                        foreach (var symbol in symbols)
+                        {
+                            writer.Write(symbol.Character);
+                            writer.Write(symbol.Code.Length);
+                            var codeBytes = BitHelper.PackBits(symbol.Code);
+                            writer.Write(codeBytes.Length);
+                            writer.Write(codeBytes);
+                        }
+                    }
+                    else if (algorithm == "huffman")
+                    {
+                        var freqTable = HuffmanCompressor.BuildFrequencyTable(text);
+                        var root = HuffmanCompressor.BuildTree(freqTable);
+                        var codeTable = HuffmanCompressor.BuildCodeTable(root);
+                        writer.Write(codeTable.Count);
+
+                        StringBuilder builder = new StringBuilder();
+                        int totalChars = text.Length;
+
+                        for (int c = 0; c < totalChars; c++)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            pauseEvent.Wait();
+
+                            char ch = text[c];
+                            builder.Append(codeTable[ch]);
+
+                            if (progress != null && (c % 100 == 0 || c == totalChars - 1))
+                            {
+                                int percent = (int)((c + 1) / (float)totalChars * 100);
+                                progress.Report((i, totalFiles, percent));
+                                Thread.Sleep(1);
+                            }
+                        }
+
+                        encodedBits = builder.ToString();
+                        encodedBytes = BitHelper.PackBits(encodedBits);
+
+                        foreach (var pair in codeTable)
+                        {
+                            writer.Write(pair.Key);
+                            writer.Write(pair.Value.Length);
+                            var codeBytes = BitHelper.PackBits(pair.Value);
+                            writer.Write(codeBytes.Length);
+                            writer.Write(codeBytes);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unsupported algorithm: " + algorithm);
+                    }
+
+                    writer.Write(encodedBits.Length);
+                    writer.Write(encodedBytes.Length);
+                    writer.Write(encodedBytes);
+
+                    int originalSize = Encoding.UTF8.GetByteCount(text);
+                    int compressedSize = encodedBytes.Length;
+                    double ratio = 100.0 * (originalSize - compressedSize) / originalSize;
+                    string summary = $"{relativePath}: {originalSize} → {compressedSize} bytes | Saved: {ratio:F2}%";
+                    compressionSummaries.Add(summary);
+
+                    progress?.Report((i, totalFiles, 100));
+                }
+            }
+
+            return compressionSummaries;
+        }
+
         public static void DecodeFile(
-    string archivePath,
-    string outputPath,
-    List<string> filesToExtract,
-    IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
+            string archivePath,
+            string outputPath,
+            List<string> filesToExtract,
+            CancellationToken token,
+            ManualResetEventSlim pauseEvent,
+            IProgress<(int fileIndex, int totalFiles, int percent)> progress = null)
         {
             using (var stream = File.OpenRead(archivePath))
             using (var reader = new BinaryReader(stream))
@@ -364,7 +505,9 @@ namespace FileCompressorApp.IO
 
                 for (int f = 0; f < fileCount; f++)
                 {
-                    // === Read file metadata ===
+                    token.ThrowIfCancellationRequested();
+                    pauseEvent.Wait();
+
                     int fileNameLength = reader.ReadInt32();
                     string relativePath = Encoding.UTF8.GetString(reader.ReadBytes(fileNameLength));
 
@@ -379,6 +522,9 @@ namespace FileCompressorApp.IO
 
                     for (int i = 0; i < symbolCount; i++)
                     {
+                        token.ThrowIfCancellationRequested();
+                        pauseEvent.Wait();
+
                         char ch = reader.ReadChar();
                         int codeLength = reader.ReadInt32();
                         int codeByteLength = reader.ReadInt32();
@@ -396,7 +542,6 @@ namespace FileCompressorApp.IO
                     byte[] encodedBytes = reader.ReadBytes(encodedByteCount);
                     string encodedBits = BitHelper.UnpackBits(encodedBytes, encodedBitCount);
 
-                    // === Only decode if user selected this file ===
                     if (filesToExtract.Contains(relativePath))
                     {
                         string decodedText = "";
@@ -410,6 +555,9 @@ namespace FileCompressorApp.IO
 
                             for (int i = 0; i < totalBits; i++)
                             {
+                                token.ThrowIfCancellationRequested();
+                                pauseEvent.Wait();
+
                                 char bit = encodedBits[i];
                                 current = (bit == '0') ? current.Left : current.Right;
 
@@ -435,14 +583,13 @@ namespace FileCompressorApp.IO
                                 progress?.Report((f, fileCount, percent));
                             });
 
-                            decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile);
+                            decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile, token, pauseEvent);
                         }
                         else
                         {
                             throw new Exception("Unsupported algorithm: " + algorithm);
                         }
 
-                        // === Recreate folder structure ===
                         string fullOutputPath = Path.Combine(outputPath, relativePath);
                         string outputDir = Path.GetDirectoryName(fullOutputPath);
                         if (!Directory.Exists(outputDir))

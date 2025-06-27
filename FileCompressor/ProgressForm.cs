@@ -1,30 +1,41 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace FileCompressor
 {
     public partial class ProgressForm : Form
     {
-        public bool IsPaused { get; private set; } = false;
-        public bool IsCancelled { get; private set; } = false;
+        public bool IsPaused => _pauseEvent != null && !_pauseEvent.IsSet;
+        public bool IsCancelled => _cts?.IsCancellationRequested ?? false;
+
         private bool allowClose = false;
+
+        private CancellationTokenSource _cts;
+        private ManualResetEventSlim _pauseEvent;
 
         public ProgressForm()
         {
             InitializeComponent();
 
-            // ربط أحداث الأزرار
             btnPause.Click += btnPause_Click;
             btnResume.Click += btnResume_Click;
             btnCancel.Click += btnCancel_Click;
 
             this.FormClosing += ProgressForm_FormClosing;
+
+            // Initialize control flow mechanisms
+            _cts = new CancellationTokenSource();
+            _pauseEvent = new ManualResetEventSlim(true); // Start as not paused
         }
+
+        public CancellationToken Token => _cts.Token;
+        public ManualResetEventSlim PauseEvent => _pauseEvent;
 
         private void btnPause_Click(object sender, EventArgs e)
         {
-            IsPaused = true;
+            _pauseEvent.Reset();
             btnPause.Enabled = false;
             btnResume.Enabled = true;
             labelStatus.Text = "Paused...";
@@ -32,7 +43,7 @@ namespace FileCompressor
 
         private void btnResume_Click(object sender, EventArgs e)
         {
-            IsPaused = false;
+            _pauseEvent.Set();
             btnPause.Enabled = true;
             btnResume.Enabled = false;
             labelStatus.Text = "Resuming...";
@@ -40,7 +51,7 @@ namespace FileCompressor
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            IsCancelled = true;
+            _cts.Cancel();
             labelStatus.Text = "Cancelling...";
         }
 
