@@ -94,242 +94,7 @@ namespace FileCompressor
             }
         }
 
-        //private async void btnStart_Click(object sender, EventArgs e)
-        //{
-        //    string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
-        //    if (inputPaths.Length == 0 || inputPaths.Any(p => !File.Exists(p)))
-        //    {
-        //        MessageBox.Show("Please select valid input files.");
-        //        return;
-        //    }
-
-        //    string outputPath = txtOutputPath.Text.Trim();
-        //    if (string.IsNullOrWhiteSpace(outputPath))
-        //    {
-        //        MessageBox.Show("Please select an output file path.");
-        //        return;
-        //    }
-
-        //    string algo = GetSelectedAlgorithm();
-        //    if (algo == "none")
-        //    {
-        //        MessageBox.Show("Please select a compression algorithm.");
-        //        return;
-        //    }
-
-        //    var progressForm = new ProgressForm();
-        //    progressForm.Show();
-        //    progressForm.BringToFront();
-
-        //    // Let the form render before starting background work
-        //    await Task.Delay(100);
-
-        //    try
-        //    {
-        //        await Task.Run(() =>
-        //        {
-        //            //if (inputPaths.Length == 1)
-        //            //{
-        //            //    string text = File.ReadAllText(inputPaths[0]);
-        //            //    string decodedPath = Path.Combine(Path.GetDirectoryName(outputPath),
-        //            //                            Path.GetFileNameWithoutExtension(outputPath) + "_decoded.txt");
-
-        //                if (algo == "shannon")
-        //                {
-
-        //                    FileEncoder.SaveEncodedFile(outputPath,inputPaths.ToList());
-
-        //                }
-        //                else if (algo == "huffman")
-        //                {
-        //                string text = File.ReadAllText(inputPaths[0]);
-        //                string decodedPath = Path.Combine(Path.GetDirectoryName(outputPath),
-        //                                        Path.GetFileNameWithoutExtension(outputPath) + "_decoded.txt");
-        //                var nodes = HuffmanCompressor.BuildFrequencyTable(text);
-        //                    var root = HuffmanCompressor.BuildTree(nodes);
-        //                    var codeTable = HuffmanCompressor.BuildCodeTable(root);
-        //                    string encoded = HuffmanCompressor.Encode(text, codeTable);
-        //                    FileEncoder.SaveEncodedFileHuffman(outputPath, codeTable, encoded);
-        //                    FileEncoder.DecodeFileHuffman(outputPath, decodedPath);
-        //                }
-        //            }
-        //            //else
-        //            //{
-        //            //    if (algo != "shannon")
-        //            //        throw new Exception("Multi-file archiving is only supported for Shannon-Fano for now.");
-
-        //            //    Program.SaveEncodedFile(outputPath, inputPaths.ToList());
-        //            //}
-        //        //}
-        //    );
-
-        //        MessageBox.Show("Compression complete.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error during compression:\n{ex.Message}");
-        //    }
-        //    finally
-        //    {
-        //        progressForm.Close();  // إغلاق النافذة بعد انتهاء العملية
-        //    }
-        //}
-        //private async void btnStart_Click(object sender, EventArgs e)
-        //{
-        //    // 1. التحقق من الملفات والمدخلات
-        //    string[] inputPaths = txtFilePath.Text.Split(';').Select(p => p.Trim()).ToArray();
-        //    if (inputPaths.Length == 0 || inputPaths.Any(p => !File.Exists(p)))
-        //    {
-        //        MessageBox.Show("Please select valid input files.");
-        //        return;
-        //    }
-
-        //    string outputPath = txtOutputPath.Text.Trim();
-        //    if (string.IsNullOrWhiteSpace(outputPath))
-        //    {
-        //        MessageBox.Show("Please select an output file path.");
-        //        return;
-        //    }
-
-        //    string algo = GetSelectedAlgorithm();
-        //    if (algo == "none")
-        //    {
-        //        MessageBox.Show("Please select a compression algorithm.");
-        //        return;
-        //    }
-
-        //    // 2. عرض نافذة التقدم
-        //    var progressForm = new ProgressForm();
-        //    progressForm.Show();
-        //    progressForm.BringToFront();
-        //    await Task.Delay(100); // للسماح للنموذج بالعرض قبل بدء المهمة
-
-        //    try
-        //    {
-        //        // 3. إعداد محدث التقدم
-        //        var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
-        //        {
-        //            var (fileIndex, totalFiles, percent) = data;
-        //            progressForm.UpdateProgress(fileIndex, totalFiles, percent, inputPaths[fileIndex]);
-        //        });
-
-        //        // 4. تنفيذ عملية الضغط بالخلفية مع تمرير نوع الخوارزمية
-        //        await Task.Run(() =>
-        //        {
-        //            FileEncoder.SaveEncodedFile(outputPath, inputPaths.ToList(), algo, progressReporter);
-        //        });
-
-        //        MessageBox.Show("Compression complete.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error during compression:\n{ex.Message}");
-        //    }
-        //    finally
-        //    {
-        //        // 5. إغلاق نافذة التقدم
-        //        progressForm.AllowClose();
-        //    }
-        ////}
-
-        //private async void btnStart_Click(object sender, EventArgs e)
-        //{
-        //    // Step 1: Read input paths (files or folders)
-        //    string[] inputPaths = txtFilePath.Text.Split(';')
-        //        .Select(p => p.Trim())
-        //        .Where(p => !string.IsNullOrWhiteSpace(p))
-        //        .ToArray();
-
-        //    if (inputPaths.Length == 0)
-        //    {
-        //        MessageBox.Show("Please select files or folders to compress.");
-        //        return;
-        //    }
-
-        //    // Step 2: Resolve all .txt files from selected paths
-        //    List<string> allTxtFiles = new List<string>();
-
-        //    foreach (var path in inputPaths)
-        //    {
-        //        if (Directory.Exists(path))
-        //        {
-        //            string[] txtFiles = Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories);
-        //            allTxtFiles.AddRange(txtFiles);
-        //        }
-        //        else if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".txt")
-        //        {
-        //            allTxtFiles.Add(path);
-        //        }
-        //    }
-
-        //    if (allTxtFiles.Count == 0)
-        //    {
-        //        MessageBox.Show("No valid .txt files found.");
-        //        return;
-        //    }
-
-        //    // Step 3: Validate output path
-        //    string outputPath = txtOutputPath.Text.Trim();
-        //    if (string.IsNullOrWhiteSpace(outputPath))
-        //    {
-        //        MessageBox.Show("Please select an output file path.");
-        //        return;
-        //    }
-
-        //    // Step 4: Detect algorithm
-        //    string algo = GetSelectedAlgorithm();
-        //    if (algo == "none")
-        //    {
-        //        MessageBox.Show("Please select a compression algorithm.");
-        //        return;
-        //    }
-
-        //    // Step 5: Setup progress form
-        //    var progressForm = new ProgressForm();
-        //    progressForm.Show();
-        //    progressForm.BringToFront();
-        //    await Task.Delay(100); // Let UI render before work starts
-
-        //    try
-        //    {
-        //        var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
-        //        {
-        //            var (fileIndex, totalFiles, percent) = data;
-        //            if (fileIndex < allTxtFiles.Count)
-        //            {
-        //                progressForm.UpdateProgress(fileIndex, totalFiles, percent, allTxtFiles[fileIndex]);
-        //            }
-        //        });
-
-        //        await Task.Run(() =>
-        //        {
-        //            // Determine base folder for relative path preservation
-        //            string baseFolder;
-        //            if (inputPaths.Length == 1 && Directory.Exists(inputPaths[0]))
-        //            {
-        //                baseFolder = inputPaths[0];
-        //            }
-        //            else
-        //            {
-        //                baseFolder = Path.GetDirectoryName(allTxtFiles[0]);
-        //            }
-
-        //            // Unified save method handles both algorithms
-        //            FileEncoder.SaveEncodedFile(outputPath, allTxtFiles, algo, baseFolder, progressReporter);
-        //        });
-
-        //        MessageBox.Show("Compression complete.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error during compression:\n{ex.Message}");
-        //    }
-        //    finally
-        //    {
-        //        progressForm.AllowClose();
-        //    }
-        //}
-
+        
         private async void btnStart_Click(object sender, EventArgs e)
         {
             // Step 1: Read input paths (files or folders)
@@ -408,7 +173,10 @@ namespace FileCompressor
                         ? inputPaths[0]
                         : Path.GetDirectoryName(allTxtFiles[0]);
 
-                    // ⏸️⛔ Pass pause/cancel tokens
+
+                    string actualPassword = string.IsNullOrWhiteSpace(password) ? null : password;
+                    
+                    //Pass pause/cancel tokens
                     compressionReport = FileEncoder.SaveEncodedFile(
                         archivePath: outputPath,
                         inputFilePaths: allTxtFiles,
@@ -416,7 +184,8 @@ namespace FileCompressor
                         token: progressForm.Token,
                         pauseEvent: progressForm.PauseEvent,
                         baseFolder: baseFolder,
-                        progress: progressReporter
+                        progress: progressReporter,
+                        actualPassword
                     );
                 });
 
@@ -563,6 +332,7 @@ namespace FileCompressor
         {
             string inputArchive = detxtFilePath.Text.Trim();
             string outputPath = detxtOutputPath.Text.Trim();
+            bool decompressedAnyFile = false;
 
             if (string.IsNullOrWhiteSpace(inputArchive) || !File.Exists(inputArchive))
             {
@@ -618,7 +388,11 @@ namespace FileCompressor
                     );
                 });
 
-                MessageBox.Show("Decompression complete.");
+                if (decompressedAnyFile) 
+                {
+                    MessageBox.Show("Decompression complete.");
+                }
+
             }
             catch (OperationCanceledException)
             {

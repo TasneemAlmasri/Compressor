@@ -24,6 +24,7 @@ namespace FileCompressorApp.IO
             using (var reader = new BinaryReader(stream))
             {
                 int fileCount = reader.ReadInt32();
+                bool isEncrypted = reader.ReadBoolean();
 
                 for (int i = 0; i < fileCount; i++)
                 {
