@@ -228,7 +228,7 @@
             tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(514, 334);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "tabPage1";
+            tabPage1.Text = "Compress";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
@@ -243,7 +243,7 @@
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(514, 334);
             tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
+            tabPage2.Text = "Decompress";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // lvArchiveContents
@@ -267,17 +267,17 @@
             // 
             // colOriginalSize
             // 
-            colOriginalSize.Text = "Original Size (B)";
+            colOriginalSize.Text = "Algorithm";
             colOriginalSize.Width = 100;
             // 
             // colCompressedSize
             // 
-            colCompressedSize.Text = "Compressed Size (B)";
+            colCompressedSize.Text = "Original Size (B)";
             colCompressedSize.Width = 120;
             // 
             // colAlgorithm
             // 
-            colAlgorithm.Text = "Algorithm";
+            colAlgorithm.Text = "Compressed Size (B)";
             colAlgorithm.Width = 100;
             // 
             // groupBox4

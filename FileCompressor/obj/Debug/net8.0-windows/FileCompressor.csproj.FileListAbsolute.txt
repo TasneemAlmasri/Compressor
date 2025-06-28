@@ -34,3 +34,5 @@ C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\D
 C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.ProgressForm.resources
 D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.ProgressForm.resources
 D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.sourcelink.json
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.PasswordPrompt.resources
+D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressorApp.PasswordPromptForm.resources
