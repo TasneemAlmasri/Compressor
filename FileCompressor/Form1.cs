@@ -94,7 +94,7 @@ namespace FileCompressor
             }
         }
 
-        
+
         private async void btnStart_Click(object sender, EventArgs e)
         {
             // Step 1: Read input paths (files or folders)
@@ -175,7 +175,7 @@ namespace FileCompressor
 
 
                     string actualPassword = string.IsNullOrWhiteSpace(password) ? null : password;
-                    
+
                     //Pass pause/cancel tokens
                     compressionReport = FileEncoder.SaveEncodedFile(
                         archivePath: outputPath,
@@ -388,12 +388,31 @@ namespace FileCompressor
                     );
                 });
 
-                if (decompressedAnyFile) 
+                if (decompressedAnyFile)
                 {
                     MessageBox.Show("Decompression complete.");
                 }
 
             }
+            // ➕ new catch 
+            catch (AggregateException aggEx) 
+            {
+                aggEx.Handle(e =>
+                {
+                    if (e is OperationCanceledException)
+                    {
+                        if (Directory.Exists(outputPath))
+                        {
+                            try { Directory.Delete(outputPath, true); }
+                            catch { }
+                        }
+                        return true;
+                    }
+                    return false; 
+                });
+                MessageBox.Show("Decompression was cancelled."); 
+            }
+            //done
             catch (OperationCanceledException)
             {
                 if (Directory.Exists(outputPath))
