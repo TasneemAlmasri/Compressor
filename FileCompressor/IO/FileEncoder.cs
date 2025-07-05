@@ -22,7 +22,7 @@ namespace FileCompressorApp.IO
         {
             bool isEncrypted = !string.IsNullOrEmpty(password);
             List<string> compressionSummaries = new List<string>();
-            List<Task> compressionTasks = new List<Task>(); 
+            List<Task> compressionTasks = new List<Task>();
 
 
             using (var stream = File.OpenWrite(archivePath))
@@ -32,21 +32,20 @@ namespace FileCompressorApp.IO
                 writer.Write(totalFiles);
                 writer.Write(isEncrypted);
 
-                object writeLock = new object(); 
+                object writeLock = new object();
 
                 for (int i = 0; i < totalFiles; i++)
                 {
                     int fileIndex = i;
                     string filePath = inputFilePaths[i];
-                    var task = Task.Run(() => 
+                    var task = Task.Run(() =>
                     {
-                        try  
+                        try
                         {
                             token.ThrowIfCancellationRequested();
                             pauseEvent.Wait();
 
-                            //string text = File.ReadAllText(filePath);
-                            byte[] text = File.ReadAllBytes(filePath); // ➕fileBytes
+                            byte[] text = File.ReadAllBytes(filePath); 
 
                             string relativePath = !string.IsNullOrEmpty(baseFolder)
                                 ? Path.GetRelativePath(baseFolder, filePath)
@@ -56,7 +55,7 @@ namespace FileCompressorApp.IO
                             byte[] encodedBytes = null;
 
                             List<Symbol> symbols = null;
-                            Dictionary<byte, string> codeTable = null;// ➕
+                            Dictionary<byte, string> codeTable = null;
 
                             using var memStream = new MemoryStream();
                             using var memWriter = new BinaryWriter(memStream);
@@ -82,8 +81,7 @@ namespace FileCompressorApp.IO
                                     token.ThrowIfCancellationRequested();
                                     pauseEvent.Wait();
 
-                                    //char ch = text[c];
-                                    byte ch = text[c];// ➕
+                                    byte ch = text[c];
 
                                     string code = symbols.First(s => s.Character == ch).Code;
                                     builder.Append(code);
@@ -113,20 +111,18 @@ namespace FileCompressorApp.IO
                                 var freqTable = HuffmanCompressor.BuildFrequencyTable(text);
                                 var root = HuffmanCompressor.BuildTree(freqTable);
                                 codeTable = HuffmanCompressor.BuildCodeTable(root);
-                                memWriter.Write(codeTable.Count); 
+                                memWriter.Write(codeTable.Count);
 
                                 StringBuilder builder = new StringBuilder();
 
-                                //int totalChars = text.Length;
-                                int totalChars = text.Length; // ➕totalBytes
+                                int totalChars = text.Length; 
 
                                 for (int c = 0; c < totalChars; c++)
                                 {
                                     token.ThrowIfCancellationRequested();
                                     pauseEvent.Wait();
 
-                                    //char ch = text[c];
-                                    byte ch = text[c];// ➕
+                                    byte ch = text[c];
 
                                     builder.Append(codeTable[ch]);
 
@@ -164,15 +160,14 @@ namespace FileCompressorApp.IO
                             memWriter.Write(encodedBytes.Length);
                             memWriter.Write(encodedBytes);
 
-                            //int originalSize = Encoding.UTF8.GetByteCount(text);
-                            int originalSize = text.Length; // ➕
+                            int originalSize = text.Length; 
                             int compressedSize = encodedBytes.Length;
                             double ratio = 100.0 * (originalSize - compressedSize) / originalSize;
                             string summary = $"{relativePath}: {originalSize} → {compressedSize} bytes | Saved: {ratio:F2}%";
 
                             lock (writeLock)
                             {
-                                writer.Write(memStream.ToArray()); 
+                                writer.Write(memStream.ToArray());
                                 compressionSummaries.Add(summary);
                             }
 
@@ -182,7 +177,7 @@ namespace FileCompressorApp.IO
                         {
                             throw;
                         }
-                    }); 
+                    });
                     compressionTasks.Add(task);
                 }
 
@@ -190,7 +185,7 @@ namespace FileCompressorApp.IO
                 {
                     Task.WaitAll(compressionTasks.ToArray());
                 }
-                catch (AggregateException ex) 
+                catch (AggregateException ex)
                 {
                     ex.Handle(e => e is OperationCanceledException);
                     throw new OperationCanceledException();
@@ -214,7 +209,7 @@ namespace FileCompressorApp.IO
             bool successAny = false;
 
             List<Task> tasks = new List<Task>();
-            object writeLock = new object(); 
+            object writeLock = new object();
 
             using (var stream = File.OpenRead(archivePath))
             using (var reader = new BinaryReader(stream))
@@ -222,6 +217,7 @@ namespace FileCompressorApp.IO
                 int fileCount = reader.ReadInt32();
 
                 bool isEncrypted = reader.ReadBoolean();
+                Debug.WriteLine($"[DEBUG] Archive encryption flag: {isEncrypted}");
 
                 string password = null;
                 if (isEncrypted)
@@ -244,7 +240,7 @@ namespace FileCompressorApp.IO
                     }
                 }
 
-                long[] entryPositions = new long[fileCount]; 
+                long[] entryPositions = new long[fileCount];
 
                 for (int i = 0; i < fileCount; i++)
                 {
@@ -256,19 +252,18 @@ namespace FileCompressorApp.IO
                     int algoLength = reader.ReadInt32();
                     reader.BaseStream.Seek(algoLength, SeekOrigin.Current);
 
-                    reader.ReadInt32(); // originalLength
+                    reader.ReadInt32(); 
                     int symbolCount = reader.ReadInt32();
 
                     for (int j = 0; j < symbolCount; j++)
                     {
-                        //reader.ReadChar();
-                        reader.ReadByte(); // ➕
+                        reader.ReadByte();
                         int len = reader.ReadInt32();
                         int byteLen = reader.ReadInt32();
                         reader.BaseStream.Seek(byteLen, SeekOrigin.Current);
                     }
 
-                    reader.ReadInt32(); // encodedBitCount
+                    reader.ReadInt32();
                     int encodedByteCount = reader.ReadInt32();
                     reader.BaseStream.Seek(encodedByteCount, SeekOrigin.Current);
                 }
@@ -284,9 +279,9 @@ namespace FileCompressorApp.IO
                         token.ThrowIfCancellationRequested();
                         pauseEvent.Wait();
 
-                        using var fs = File.OpenRead(archivePath); 
-                        using var localReader = new BinaryReader(fs); 
-                        fs.Seek(filePosition, SeekOrigin.Begin); 
+                        using var fs = File.OpenRead(archivePath);
+                        using var localReader = new BinaryReader(fs);
+                        fs.Seek(filePosition, SeekOrigin.Begin);
 
 
                         int fileNameLength = localReader.ReadInt32();
@@ -300,15 +295,13 @@ namespace FileCompressorApp.IO
                         int symbolCount = localReader.ReadInt32();
                         List<Symbol> symbols = new List<Symbol>();
 
-                        //Dictionary<char, string> codeTable = new Dictionary<char, string>();
-                        Dictionary<byte, string> codeTable = new Dictionary<byte, string>(); // ➕
+                        Dictionary<byte, string> codeTable = new Dictionary<byte, string>(); 
 
                         for (int j = 0; j < symbolCount; j++)
                         {
-                            //char ch = localReader.ReadChar();
                             byte ch = localReader.ReadByte();
 
-                            int codeLength = localReader.ReadInt32();               
+                            int codeLength = localReader.ReadInt32();
                             int codeByteLength = localReader.ReadInt32();
                             byte[] codeBytes = localReader.ReadBytes(codeByteLength);
                             string code = BitHelper.UnpackBits(codeBytes, codeLength);
@@ -344,15 +337,13 @@ namespace FileCompressorApp.IO
 
                         if (filesToExtract.Contains(relativePath))
                         {
-                            //string decodedText = "";
-                            byte[] decodedText = null; // ➕ decodedBytes 
+                            byte[] decodedText = null; 
 
                             if (algorithm == "huffman")
                             {
                                 HuffmanNode root = RebuildHuffmanTree(codeTable);
 
-                                //StringBuilder decodedBuilder = new StringBuilder();
-                                List<byte> byteList = new List<byte>();// ➕
+                                List<byte> byteList = new List<byte>();
 
                                 HuffmanNode current = root;
                                 int totalBits = encodedBits.Length;
@@ -367,8 +358,7 @@ namespace FileCompressorApp.IO
 
                                     if (current.Left == null && current.Right == null)
                                     {
-                                        //decodedBuilder.Append(current.Character);
-                                        byteList.Add(current.Character.Value); // ➕
+                                        byteList.Add(current.Character.Value); 
 
                                         current = root;
                                     }
@@ -380,8 +370,7 @@ namespace FileCompressorApp.IO
                                     }
                                 }
 
-                                //decodedText = decodedBuilder.ToString();
-                                decodedText = byteList.ToArray(); // ➕decodedBytes 
+                                decodedText = byteList.ToArray();  
                             }
                             else if (algorithm == "shannon")
                             {
@@ -390,9 +379,7 @@ namespace FileCompressorApp.IO
                                     progress?.Report((fileIndex, fileCount, percent));
                                 });
 
-                                //string decodedStr = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile, token, pauseEvent);
-                                //decodedText = decodedStr.Select(c => (byte)c).ToArray(); 
-                                decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile, token, pauseEvent);// ➕
+                                decodedText = ShannonFanoCompressor.Decode(encodedBits, symbols, progressForFile, token, pauseEvent);
                             }
                             else
                             {
@@ -400,7 +387,7 @@ namespace FileCompressorApp.IO
                             }
 
                             string fullOutputPath;
-                            lock (writeLock)      
+                            lock (writeLock)
                             {
 
                                 fullOutputPath = Path.Combine(outputPath, relativePath);
@@ -410,8 +397,7 @@ namespace FileCompressorApp.IO
                             }
 
 
-                            //File.WriteAllText(fullOutputPath, decodedText);
-                            File.WriteAllBytes(fullOutputPath, decodedText); // ➕
+                            File.WriteAllBytes(fullOutputPath, decodedText);
 
                             Debug.WriteLine($"Extracted: {fullOutputPath}");
 
@@ -421,23 +407,23 @@ namespace FileCompressorApp.IO
                         {
                             progress?.Report((fileIndex, fileCount, 100));
                         }
-                    }); 
-                    tasks.Add(task); 
+                    });
+                    tasks.Add(task);
                 }
 
                 try
                 {
-                    Task.WaitAll(tasks.ToArray()); 
+                    Task.WaitAll(tasks.ToArray());
                 }
                 catch (AggregateException aggEx)
                 {
-                    aggEx.Handle(e => 
+                    aggEx.Handle(e =>
                     {
                         if (e is OperationCanceledException)
-                            return true; 
-                        return false;  
+                            return true;
+                        return false;
                     });
-                    throw; 
+                    throw;
                 }
                 catch (OperationCanceledException)
                 {
@@ -450,14 +436,13 @@ namespace FileCompressorApp.IO
 
 
 
-        private static HuffmanNode RebuildHuffmanTree(Dictionary<byte, string> codeTable)// ➕
+        private static HuffmanNode RebuildHuffmanTree(Dictionary<byte, string> codeTable)
         {
             HuffmanNode root = new HuffmanNode();
 
             foreach (var kv in codeTable)
             {
-                //char ch = kv.Key;
-                byte ch = kv.Key;// ➕
+                byte ch = kv.Key;
 
                 string code = kv.Value;
                 HuffmanNode current = root;

@@ -57,6 +57,7 @@
             debtnBrowseDistance = new Button();
             detxtOutputPath = new TextBox();
             btnDecompress_Click = new Button();
+            compareButton = new RadioButton();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -111,12 +112,13 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(compareButton);
             groupBox2.Controls.Add(radioHuffman);
             groupBox2.Controls.Add(radioShannon);
             groupBox2.Controls.Add(btnSetPassword);
             groupBox2.Location = new Point(10, 182);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(495, 95);
+            groupBox2.Size = new Size(495, 120);
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
             groupBox2.Text = "Algorithm";
@@ -147,7 +149,7 @@
             // 
             // btnSetPassword
             // 
-            btnSetPassword.Location = new Point(377, 50);
+            btnSetPassword.Location = new Point(377, 80);
             btnSetPassword.Name = "btnSetPassword";
             btnSetPassword.Size = new Size(112, 30);
             btnSetPassword.TabIndex = 2;
@@ -157,7 +159,7 @@
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(10, 295);
+            btnStart.Location = new Point(10, 308);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(221, 29);
             btnStart.TabIndex = 3;
@@ -167,7 +169,7 @@
             // 
             // btnCancel
             // 
-            btnCancel.Location = new Point(256, 295);
+            btnCancel.Location = new Point(256, 308);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(249, 29);
             btnCancel.TabIndex = 4;
@@ -213,7 +215,7 @@
             tabCompress.Location = new Point(-2, -2);
             tabCompress.Name = "tabCompress";
             tabCompress.SelectedIndex = 0;
-            tabCompress.Size = new Size(522, 367);
+            tabCompress.Size = new Size(522, 381);
             tabCompress.TabIndex = 5;
             // 
             // tabPage1
@@ -226,7 +228,7 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(514, 334);
+            tabPage1.Size = new Size(514, 348);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Compress";
             tabPage1.UseVisualStyleBackColor = true;
@@ -358,11 +360,21 @@
             btnDecompress_Click.UseVisualStyleBackColor = true;
             btnDecompress_Click.Click += btnDecompress_Click_Click;
             // 
+            // compareButton
+            // 
+            compareButton.AutoSize = true;
+            compareButton.Location = new Point(12, 86);
+            compareButton.Name = "compareButton";
+            compareButton.Size = new Size(91, 24);
+            compareButton.TabIndex = 3;
+            compareButton.Text = "Compare";
+            compareButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(519, 363);
+            ClientSize = new Size(519, 376);
             Controls.Add(tabCompress);
             Name = "Form1";
             Text = "Form1";
@@ -416,7 +428,7 @@
         private TextBox detxtFilePath;
         private Button btnCancel2;
         private GroupBox groupBox5;
-        private RadioButton radioButton1;
+        private RadioButton compareButton;
         private RadioButton radioButton2;
         private Button button3;
         private GroupBox groupBox6;

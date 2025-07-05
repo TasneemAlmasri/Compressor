@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace FileCompressorApp.Helpers
+﻿namespace FileCompressorApp.Helpers
 {
     public static class ParallelHelper
     {

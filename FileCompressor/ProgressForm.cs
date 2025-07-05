@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-
-namespace FileCompressor
+﻿namespace FileCompressor
 {
     public partial class ProgressForm : Form
     {
@@ -25,9 +20,8 @@ namespace FileCompressor
 
             this.FormClosing += ProgressForm_FormClosing;
 
-            // Initialize control flow mechanisms
             _cts = new CancellationTokenSource();
-            _pauseEvent = new ManualResetEventSlim(true); // Start as not paused
+            _pauseEvent = new ManualResetEventSlim(true);
         }
 
         public CancellationToken Token => _cts.Token;

@@ -2,18 +2,16 @@
 {
     using FileCompressorApp.Models;
     using System.Collections.Generic;
-    using System.ComponentModel.Design;
     using System.Diagnostics;
     using System.Linq;
     using System.Text;
 
     public static class HuffmanCompressor
     {
-        public static List<HuffmanNode> BuildFrequencyTable(byte[] data) // ➕
+        public static List<HuffmanNode> BuildFrequencyTable(byte[] data) 
         {
-            //هون عرفنا ماب مشان نخزن كل حرف كم مرة تكرر 
-            Dictionary<byte, int> freqMap = new Dictionary<byte, int>(); // ➕
-            foreach (byte c in data) // ➕
+            Dictionary<byte, int> freqMap = new Dictionary<byte, int>(); 
+            foreach (byte c in data)
             {
                 if (freqMap.ContainsKey(c))
                     freqMap[c]++;
@@ -30,23 +28,18 @@
 
         public static HuffmanNode BuildTree(List<HuffmanNode> nodes)
         {
-            // ننشئ PriorityQueue بترتيب تصاعدي حسب Frequency
             var pq = new PriorityQueue<HuffmanNode, int>();
 
-            // نضيف كل عقدة إلى الـ PriorityQueue مع تكرارها كأولوية
             foreach (var node in nodes)
             {
                 pq.Enqueue(node, node.Frequency);
             }
 
-            // نكرر حتى يتبقى عقدة واحدة فقط
             while (pq.Count > 1)
             {
-                // نأخذ العقدتين الأقل تكرارًا
                 HuffmanNode left = pq.Dequeue();
                 HuffmanNode right = pq.Dequeue();
 
-                // ننشئ عقدة جديدة لا تحتوي على حرف (null)
                 HuffmanNode parent = new HuffmanNode
                 {
                     Character = null,
@@ -55,18 +48,14 @@
                     Right = right
                 };
 
-                // نضيف العقدة الجديدة للـ PriorityQueue
                 pq.Enqueue(parent, parent.Frequency);
             }
-
-            // العقدة الوحيدة المتبقية هي جذر الشجرة
             return pq.Dequeue();
         }
 
-        public static Dictionary<byte, string> BuildCodeTable(HuffmanNode root)// ➕
+        public static Dictionary<byte, string> BuildCodeTable(HuffmanNode root)
         {
-            Dictionary<byte, string> table = new Dictionary<byte, string>();// ➕
-            //We are using dfs and pre oreder for traversing
+            Dictionary<byte, string> table = new Dictionary<byte, string>();
             void Traverse(HuffmanNode node, string code)
             {
                 if (node == null)
@@ -75,7 +64,7 @@
                 if (node.IsLeaf)
                 {
                     table[node.Character.Value] = code;
-                    Debug.WriteLine($"Char: '{node.Character}' => Code: {code}");  // للطباعة المؤقتة والتأكد
+                    Debug.WriteLine($"Char: '{node.Character}' => Code: {code}"); 
                 }
                 else
                 {
@@ -87,7 +76,8 @@
             Traverse(root, "");
             return table;
         }
-        public static string Encode(byte[] text, Dictionary<byte, string> codeTable, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)// ➕
+
+        public static string Encode(byte[] text, Dictionary<byte, string> codeTable, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
         {
             StringBuilder encoded = new StringBuilder();
             int totalChars = text.Length;
@@ -99,7 +89,7 @@
                 pauseEvent.Wait();
 
                 //char c = text[i];
-                byte c = text[i]; // ➕
+                byte c = text[i]; 
 
                 if (codeTable.ContainsKey(c))
                     encoded.Append(codeTable[c]);
@@ -148,7 +138,6 @@
 
             return decoded.ToString();
         }
-
 
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace FileCompressorApp.Helpers
 {
     public static class AesEncryptionHelper
     {
-        // Encrypt data using AES-CBC with random IV
         public static byte[] Encrypt(byte[] plainBytes, string password)
         {
             byte[] key = DeriveKey(password);
@@ -15,19 +12,18 @@ namespace FileCompressorApp.Helpers
             aes.Key = key;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
-            aes.GenerateIV(); // Random IV
+            aes.GenerateIV(); 
 
             using var ms = new MemoryStream();
-            ms.Write(aes.IV, 0, aes.IV.Length); // Prepend IV
+            ms.Write(aes.IV, 0, aes.IV.Length); 
 
             using var cryptoStream = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write);
             cryptoStream.Write(plainBytes, 0, plainBytes.Length);
             cryptoStream.FlushFinalBlock();
 
-            return ms.ToArray(); // [IV + ciphertext]
+            return ms.ToArray();
         }
 
-        // Decrypt using AES-CBC
         public static byte[] Decrypt(byte[] encryptedData, string password, out bool success)
         {
             success = false;
@@ -42,7 +38,7 @@ namespace FileCompressorApp.Helpers
                 aes.Padding = PaddingMode.PKCS7;
 
                 byte[] iv = new byte[16];
-                Array.Copy(encryptedData, 0, iv, 0, 16); // First 16 bytes are IV
+                Array.Copy(encryptedData, 0, iv, 0, 16);
                 aes.IV = iv;
 
                 using var ms = new MemoryStream();
@@ -59,8 +55,6 @@ namespace FileCompressorApp.Helpers
                 return Array.Empty<byte>();
             }
         }
-
-        // Derive AES key from password
         private static byte[] DeriveKey(string password)
         {
             using var sha256 = SHA256.Create();

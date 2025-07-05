@@ -1,13 +1,5 @@
-﻿using FileCompressorApp;
-using FileCompressorApp.Compression;
+﻿using FileCompressorApp.Helpers;
 using FileCompressorApp.IO;
-using FileCompressorApp.Models;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FileCompressor
 {
@@ -24,7 +16,7 @@ namespace FileCompressor
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             //openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            openFileDialog.Filter = "All Files (*.*)|*.*";// ➕
+            openFileDialog.Filter = "All Files (*.*)|*.*";
 
             openFileDialog.Multiselect = true;
 
@@ -101,7 +93,6 @@ namespace FileCompressor
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            // Step 1: Read input paths (files or folders)
             string[] inputPaths = txtFilePath.Text.Split(';')
                 .Select(p => p.Trim())
                 .Where(p => !string.IsNullOrWhiteSpace(p))
@@ -113,7 +104,6 @@ namespace FileCompressor
                 return;
             }
 
-            // Step 2: Resolve all .txt files from selected paths
             List<string> allTxtFiles = new List<string>();
 
             foreach (var path in inputPaths)
@@ -135,31 +125,31 @@ namespace FileCompressor
                 return;
             }
 
-            // Step 3: Validate output path
             string outputPath = txtOutputPath.Text.Trim();
             if (string.IsNullOrWhiteSpace(outputPath))
             {
                 MessageBox.Show("Please select an output file path.");
                 return;
             }
-
-            // Step 4: Detect algorithm
             string algo = GetSelectedAlgorithm();
             if (algo == "none")
             {
-                MessageBox.Show("Please select a compression algorithm.");
+                var comparisonForm = new ComparisonForm();
+                var inputFilePathsList = inputPaths.ToList();
+                var results = CompressionComparer.CompareCompressionAlgorithms(inputFilePathsList);
+                comparisonForm.LoadResults(results);
+                comparisonForm.ShowDialog();
                 return;
             }
 
-            // Step 5: Setup progress form (includes Pause/Cancel tokens)
+
             var progressForm = new ProgressForm();
             progressForm.Show();
             progressForm.BringToFront();
-            await Task.Delay(100); // Let UI render before work starts
+            await Task.Delay(100);
 
             try
             {
-                // Step 6: Setup progress reporter
                 var progressReporter = new Progress<(int fileIndex, int totalFiles, int percent)>((data) =>
                 {
                     var (fileIndex, totalFiles, percent) = data;
@@ -180,7 +170,6 @@ namespace FileCompressor
 
                     string actualPassword = string.IsNullOrWhiteSpace(password) ? null : password;
 
-                    //Pass pause/cancel tokens
                     compressionReport = FileEncoder.SaveEncodedFile(
                         archivePath: outputPath,
                         inputFilePaths: allTxtFiles,
@@ -191,9 +180,9 @@ namespace FileCompressor
                         progress: progressReporter,
                         actualPassword
                     );
+                    password = "";
                 });
 
-                // ✅ Show compression ratio report
                 MessageBox.Show("📦 Compression Summary:\n\n" + string.Join("\n", compressionReport));
             }
             catch (OperationCanceledException)
@@ -201,7 +190,7 @@ namespace FileCompressor
                 if (File.Exists(outputPath))
                 {
                     try { File.Delete(outputPath); }
-                    catch { /* ممكن تسجل الخطأ فقط */ }
+                    catch { }
                 }
                 MessageBox.Show("Compression was cancelled.");
             }
@@ -232,7 +221,6 @@ namespace FileCompressor
             saveFileDialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
             saveFileDialog.DefaultExt = "bin";
 
-            // If output path textbox already has a path, start dialog there
             if (!string.IsNullOrEmpty(txtOutputPath.Text))
             {
                 saveFileDialog.InitialDirectory = Path.GetDirectoryName(txtOutputPath.Text);
@@ -259,7 +247,6 @@ namespace FileCompressor
                 string folder = Path.Combine(dir, "Decompressed_" + Path.GetFileNameWithoutExtension(openFileDialog.FileName));
                 detxtOutputPath.Text = folder;
 
-                // Load the archive contents preview
                 LoadArchiveIndex(detxtFilePath.Text);
 
             }
@@ -279,7 +266,6 @@ namespace FileCompressor
                     }
                     catch
                     {
-                        // Ignore invalid path
                     }
                 }
 
@@ -301,17 +287,13 @@ namespace FileCompressor
                 {
                     string selectedFolder = folderDialog.SelectedPath;
 
-                    // Get existing paths from txtFilePath
                     var existingPaths = txtFilePath.Text.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                    // Add the selected folder path if not already there
                     if (!existingPaths.Contains(selectedFolder))
                         existingPaths.Add(selectedFolder);
 
-                    // Update txtFilePath with folder paths separated by semicolon
                     txtFilePath.Text = string.Join(";", existingPaths);
 
-                    // Set the output path based on the first selected folder
                     if (existingPaths.Count > 0)
                     {
                         string firstFolder = existingPaths[0];
@@ -331,7 +313,6 @@ namespace FileCompressor
             this.Close();
         }
 
-        // Decompression button handler:
         private async void btnDecompress_Click_Click(object sender, EventArgs e)
         {
             string inputArchive = detxtFilePath.Text.Trim();
@@ -349,8 +330,6 @@ namespace FileCompressor
                 MessageBox.Show("Please select a valid output path.");
                 return;
             }
-
-            // Get selected entries
             List<string> selectedFileNames = new List<string>();
             foreach (ListViewItem item in lvArchiveContents.CheckedItems)
             {
@@ -368,7 +347,7 @@ namespace FileCompressor
             progressForm.Show();
             progressForm.BringToFront();
 
-            await Task.Delay(100); // Let UI render before starting work
+            await Task.Delay(100); 
 
             try
             {
@@ -381,7 +360,6 @@ namespace FileCompressor
 
                 await Task.Run(() =>
                 {
-                    // Pass CancellationToken and PauseEvent from ProgressForm
                     FileEncoder.DecodeFile(
                         archivePath: inputArchive,
                         outputPath: outputPath,
@@ -420,7 +398,7 @@ namespace FileCompressor
                 if (Directory.Exists(outputPath))
                 {
                     try { Directory.Delete(outputPath, true); }
-                    catch { /* سجل فقط */ }
+                    catch {  }
                 }
                 MessageBox.Show("Decompression was cancelled.");
             }
@@ -449,8 +427,8 @@ namespace FileCompressor
                 item.SubItems.Add(entry.Algorithm);
                 item.SubItems.Add(entry.OriginalSize.ToString());
                 item.SubItems.Add(entry.CompressedSize.ToString());
-                item.Tag = entry; // ? This is important!
-                item.Checked = true;  // Select all by default
+                item.Tag = entry; 
+                item.Checked = true;  
                 lvArchiveContents.Items.Add(item);
             }
         }
@@ -467,57 +445,24 @@ namespace FileCompressor
 
             if (selectedItems.Count == 1)
             {
-                // One file selected ? suggest a single file output
                 string originalFile = selectedItems[0].SubItems[0].Text;
                 string dir = Path.GetDirectoryName(detxtFilePath.Text);
                 string nameOnly = Path.GetFileNameWithoutExtension(originalFile);
 
-                string ext = Path.GetExtension(originalFile);// ➕
+                string ext = Path.GetExtension(originalFile);
                 string outputFile = Path.Combine(dir, nameOnly + "_decompressed" + ext);
                 
                 detxtOutputPath.Text = outputFile;
             }
             else if (selectedItems.Count > 1)
             {
-                // Multiple files ? suggest folder output
                 string dir = Path.GetDirectoryName(detxtFilePath.Text);
                 string folder = Path.Combine(dir, "Decompressed_" + Path.GetFileNameWithoutExtension(detxtFilePath.Text));
                 detxtOutputPath.Text = folder;
             }
-
-            // Optional (Step 6): disable decompress button if nothing is selected
             btnDecompress_Click.Enabled = selectedItems.Count > 0;
         }
 
-        private void RunWithProgress(Action<ProgressForm> action)
-        {
-            ProgressForm progressForm = new ProgressForm();
-            progressForm.Show();
-
-            Thread thread = new Thread(() =>
-            {
-                try
-                {
-                    action(progressForm);
-
-                    progressForm.Invoke(new Action(() =>
-                    {
-                        progressForm.Close();
-                        MessageBox.Show("Operation completed.");
-                    }));
-                }
-                catch (Exception ex)
-                {
-                    progressForm.Invoke(new Action(() =>
-                    {
-                        progressForm.Close();
-                        MessageBox.Show("Error: " + ex.Message);
-                    }));
-                }
-            });
-
-            thread.Start();
-        }
 
     }
 }

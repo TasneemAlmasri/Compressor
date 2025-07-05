@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-namespace FileCompressorApp.IO
+﻿namespace FileCompressorApp.IO
 {
     public class ArchiveEntry
     {
@@ -11,7 +6,7 @@ namespace FileCompressorApp.IO
         public string Algorithm;
         public int OriginalSize;
         public int CompressedSize;
-        public long DataPosition;  // Byte offset in the stream
+        public long DataPosition;
     }
 
     public static class ArchiveReader
@@ -40,7 +35,7 @@ namespace FileCompressorApp.IO
                     for (int s = 0; s < symbolCount; s++)
                     {
                         //reader.ReadChar(); 
-                        reader.ReadByte();  // ➕
+                        reader.ReadByte();
 
                         int codeLength = reader.ReadInt32();
                         int codeByteLength = reader.ReadInt32();
@@ -51,7 +46,7 @@ namespace FileCompressorApp.IO
                     int byteCount = reader.ReadInt32();
 
                     long dataPos = stream.Position;
-                    reader.BaseStream.Seek(byteCount, SeekOrigin.Current); // skip encoded data
+                    reader.BaseStream.Seek(byteCount, SeekOrigin.Current);
 
                     entries.Add(new ArchiveEntry
                     {
