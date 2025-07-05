@@ -135,8 +135,7 @@ namespace FileCompressor
             if (algo == "none")
             {
                 var comparisonForm = new ComparisonForm();
-                var inputFilePathsList = inputPaths.ToList();
-                var results = CompressionComparer.CompareCompressionAlgorithms(inputFilePathsList);
+                var results = CompressionComparer.CompareCompressionAlgorithms(allTxtFiles);
                 comparisonForm.LoadResults(results);
                 comparisonForm.ShowDialog();
                 return;

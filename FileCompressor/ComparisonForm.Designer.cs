@@ -44,7 +44,7 @@
             listViewComparison.Location = new Point(12, 15);
             listViewComparison.Margin = new Padding(3, 4, 3, 4);
             listViewComparison.Name = "listViewComparison";
-            listViewComparison.Size = new Size(760, 149);
+            listViewComparison.Size = new Size(863, 149);
             listViewComparison.TabIndex = 0;
             listViewComparison.UseCompatibleStateImageBehavior = false;
             listViewComparison.View = View.Details;
@@ -81,7 +81,7 @@
             // 
             // btnClose
             // 
-            btnClose.Location = new Point(680, 172);
+            btnClose.Location = new Point(783, 172);
             btnClose.Margin = new Padding(3, 4, 3, 4);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(92, 38);
@@ -94,7 +94,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 215);
+            ClientSize = new Size(887, 215);
             Controls.Add(btnClose);
             Controls.Add(listViewComparison);
             FormBorderStyle = FormBorderStyle.FixedDialog;
