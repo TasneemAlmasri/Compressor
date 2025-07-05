@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "D:\\multi media projects\\FileCompressor\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\io\\archivereader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\io\\archivereader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\io\\fileencoder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\io\\fileencoder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|d:\\multi media projects\\filecompressor\\filecompressor\\models\\symobl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D6329400-E2F3-4F23-94DD-9EB1DF9C7539}|FileCompressor\\FileCompressor.csproj|solutionrelative:filecompressor\\models\\symobl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,27 +31,53 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Form1.cs",
-              "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
-              "RelativeDocumentMoniker": "FileCompressor\\Form1.cs",
-              "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
-              "RelativeToolTip": "FileCompressor\\Form1.cs",
-              "ViewState": "AgIAAJQBAAAAAAAAAADwv5YBAAAkAAAAAAAAAA==",
+              "Title": "ArchiveReader.cs",
+              "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\ArchiveReader.cs",
+              "RelativeDocumentMoniker": "FileCompressor\\IO\\ArchiveReader.cs",
+              "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\ArchiveReader.cs",
+              "RelativeToolTip": "FileCompressor\\IO\\ArchiveReader.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAYwCkAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T20:46:24.987Z",
+              "WhenOpened": "2025-07-05T01:30:10.19Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "FileEncoder.cs",
               "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\FileEncoder.cs",
               "RelativeDocumentMoniker": "FileCompressor\\IO\\FileEncoder.cs",
               "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\IO\\FileEncoder.cs",
               "RelativeToolTip": "FileCompressor\\IO\\FileEncoder.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAcAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAN8BAAAAAAAAAADwv+gBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-30T20:30:35.892Z",
+              "WhenOpened": "2025-07-05T01:09:01.035Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Symobl.cs",
+              "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Models\\Symobl.cs",
+              "RelativeDocumentMoniker": "FileCompressor\\Models\\Symobl.cs",
+              "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Models\\Symobl.cs",
+              "RelativeToolTip": "FileCompressor\\Models\\Symobl.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-05T01:08:32.923Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
+              "RelativeDocumentMoniker": "FileCompressor\\Form1.cs",
+              "ToolTip": "D:\\multi media projects\\FileCompressor\\FileCompressor\\Form1.cs",
+              "RelativeToolTip": "FileCompressor\\Form1.cs",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAkwHQAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-05T01:07:31.521Z",
               "EditorCaption": ""
             }
           ]

@@ -8,10 +8,10 @@ namespace FileCompressorApp.Compression
 {
     public static class ShannonFanoCompressor
     {
-        public static List<Symbol> BuildFrequencyTable(string text)
+        public static List<Symbol> BuildFrequencyTable(byte[] text) // ➕
         {
-            Dictionary<char, int> freqMap = new Dictionary<char, int>();
-            foreach (char c in text)
+            Dictionary<byte, int> freqMap = new Dictionary<byte, int>();// ➕
+            foreach (byte c in text)// ➕
             {
                 if (freqMap.ContainsKey(c))
                     freqMap[c]++;
@@ -59,31 +59,8 @@ namespace FileCompressorApp.Compression
             RecursiveSplit(symbols);
         }
 
-        //public static string Encode(string text, List<Symbol> symbols)
-        //{
-        //    var codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
-        //    return string.Concat(text.Select(c => codeMap[c]));
-        //}
-
-        //public static string Decode(string encoded, List<Symbol> symbols)
-        //{
-        //    var reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
-        //    string result = "";
-        //    string buffer = "";
-
-        //    foreach (char bit in encoded)
-        //    {
-        //        buffer += bit;
-        //        if (reverseMap.ContainsKey(buffer))
-        //        {
-        //            result += reverseMap[buffer];
-        //            buffer = "";
-        //        }
-        //    }
-
-        //    return result;
-        //}
-        public static string Encode(string text, List<Symbol> symbols, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
+        
+        public static string Encode(byte[] text, List<Symbol> symbols, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)// ➕
         {
             var codeMap = symbols.ToDictionary(s => s.Character, s => s.Code);
             StringBuilder encodedBuilder = new StringBuilder();
@@ -96,7 +73,10 @@ namespace FileCompressorApp.Compression
                 token.ThrowIfCancellationRequested();
                 pauseEvent.Wait();
 
-                char c = text[i];
+                //char c = text[i];
+                byte c = text[i]; // ➕
+
+
                 if (!codeMap.ContainsKey(c))
                     throw new Exception($"Character '{c}' not found in code map.");
 
@@ -114,10 +94,13 @@ namespace FileCompressorApp.Compression
             return encodedBuilder.ToString();
         }
 
-        public static string Decode(string encoded, List<Symbol> symbols, IProgress<int> progress = null, CancellationToken token = default, ManualResetEventSlim pauseEvent = null)
+        public static byte[] Decode(string encoded, List<Symbol> symbols, IProgress<int> progress = null, CancellationToken token = default, ManualResetEventSlim pauseEvent = null)// ➕
         {
             var reverseMap = symbols.ToDictionary(s => s.Code, s => s.Character);
-            StringBuilder result = new StringBuilder();
+
+            //StringBuilder result = new StringBuilder();
+            List<byte> result = new List<byte>(); // ➕
+
             string buffer = "";
             int totalBits = encoded.Length;
             int reportInterval = Math.Max(totalBits / 100, 1);
@@ -130,7 +113,9 @@ namespace FileCompressorApp.Compression
                 buffer += encoded[i];
                 if (reverseMap.ContainsKey(buffer))
                 {
-                    result.Append(reverseMap[buffer]);
+                    //result.Append(reverseMap[buffer]);
+                    result.Add(reverseMap[buffer]); // ➕
+
                     buffer = "";
                 }
 
@@ -143,7 +128,8 @@ namespace FileCompressorApp.Compression
                 }
             }
 
-            return result.ToString();
+            //return result.ToString();
+            return result.ToArray(); // ➕
         }
 
 

@@ -39,7 +39,9 @@ namespace FileCompressorApp.IO
 
                     for (int s = 0; s < symbolCount; s++)
                     {
-                        reader.ReadChar();              // char
+                        //reader.ReadChar(); 
+                        reader.ReadByte();  // ➕
+
                         int codeLength = reader.ReadInt32();
                         int codeByteLength = reader.ReadInt32();
                         reader.ReadBytes(codeByteLength);

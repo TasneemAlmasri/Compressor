@@ -9,11 +9,11 @@
 
     public static class HuffmanCompressor
     {
-        public static List<HuffmanNode> BuildFrequencyTable(string text)
+        public static List<HuffmanNode> BuildFrequencyTable(byte[] data) // ➕
         {
             //هون عرفنا ماب مشان نخزن كل حرف كم مرة تكرر 
-            Dictionary<char, int> freqMap = new Dictionary<char, int>();
-            foreach (char c in text)
+            Dictionary<byte, int> freqMap = new Dictionary<byte, int>(); // ➕
+            foreach (byte c in data) // ➕
             {
                 if (freqMap.ContainsKey(c))
                     freqMap[c]++;
@@ -63,9 +63,9 @@
             return pq.Dequeue();
         }
 
-        public static Dictionary<char, string> BuildCodeTable(HuffmanNode root)
+        public static Dictionary<byte, string> BuildCodeTable(HuffmanNode root)// ➕
         {
-            Dictionary<char, string> table = new Dictionary<char, string>();
+            Dictionary<byte, string> table = new Dictionary<byte, string>();// ➕
             //We are using dfs and pre oreder for traversing
             void Traverse(HuffmanNode node, string code)
             {
@@ -87,7 +87,7 @@
             Traverse(root, "");
             return table;
         }
-        public static string Encode(string text, Dictionary<char, string> codeTable, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)
+        public static string Encode(byte[] text, Dictionary<byte, string> codeTable, CancellationToken token, ManualResetEventSlim pauseEvent, IProgress<int> progress = null)// ➕
         {
             StringBuilder encoded = new StringBuilder();
             int totalChars = text.Length;
@@ -98,7 +98,9 @@
                 token.ThrowIfCancellationRequested();
                 pauseEvent.Wait();
 
-                char c = text[i];
+                //char c = text[i];
+                byte c = text[i]; // ➕
+
                 if (codeTable.ContainsKey(c))
                     encoded.Append(codeTable[c]);
                 else
@@ -147,70 +149,6 @@
             return decoded.ToString();
         }
 
-        //public static string Encode(string text, Dictionary<char, string> codeTable)
-        //{
-        //    StringBuilder encoded = new StringBuilder();
-        //    foreach (char c in text)
-        //    {
-        //        if (codeTable.ContainsKey(c))
-        //            encoded.Append(codeTable[c]);
-        //        else
-        //            throw new Exception($"Character '{c}' not found in code table.");
-        //    }
-        //    return encoded.ToString();
-        //}
-
-        //public static string Decode(string encodedBits, HuffmanNode root)
-        //{
-        //    StringBuilder decoded = new StringBuilder();
-        //    HuffmanNode current = root;
-
-        //    foreach (char bit in encodedBits)
-        //    {
-        //        if (bit == '0')
-        //            current = current.Left;
-        //        else if (bit == '1')
-        //            current = current.Right;
-        //        else
-        //            throw new Exception("Invalid bit in encoded string.");
-
-        //        if (current.IsLeaf)
-        //        {
-        //            decoded.Append(current.Character);
-        //            current = root; // نرجع للجذر بعد كل حرف
-        //        }
-        //    }
-
-        //    return decoded.ToString();
-        //}
-        //public static string Decode(string encodedBits, HuffmanNode root, IProgress<int> progress = null)
-        //{
-        //    StringBuilder decoded = new StringBuilder();
-        //    HuffmanNode current = root;
-        //    int totalBits = encodedBits.Length;
-        //    int reportInterval = Math.Max(totalBits / 100, 1);
-
-        //    for (int i = 0; i < totalBits; i++)
-        //    {
-        //        current = encodedBits[i] == '0' ? current.Left : current.Right;
-
-        //        if (current.IsLeaf)
-        //        {
-        //            decoded.Append(current.Character);
-        //            current = root;
-        //        }
-
-        //        if (progress != null && (i % reportInterval == 0 || i == totalBits - 1))
-        //        {
-        //            int percent = (int)((i + 1L) * 100 / totalBits);
-        //            progress.Report(percent);
-        //            Application.DoEvents();
-        //            Thread.Sleep(1);
-        //        }
-        //    }
-
-        //    return decoded.ToString();
-        //}
 
     }
 }

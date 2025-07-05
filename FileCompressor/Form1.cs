@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FileCompressor
 {
@@ -21,7 +22,10 @@ namespace FileCompressor
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+            //openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFileDialog.Filter = "All Files (*.*)|*.*";// ➕
+
             openFileDialog.Multiselect = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -116,10 +120,10 @@ namespace FileCompressor
             {
                 if (Directory.Exists(path))
                 {
-                    string[] txtFiles = Directory.GetFiles(path, "*.txt", SearchOption.AllDirectories);
+                    string[] txtFiles = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
                     allTxtFiles.AddRange(txtFiles);
                 }
-                else if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".txt")
+                else if (File.Exists(path))
                 {
                     allTxtFiles.Add(path);
                 }
@@ -394,7 +398,6 @@ namespace FileCompressor
                 }
 
             }
-            // ➕ new catch 
             catch (AggregateException aggEx) 
             {
                 aggEx.Handle(e =>
@@ -412,7 +415,6 @@ namespace FileCompressor
                 });
                 MessageBox.Show("Decompression was cancelled."); 
             }
-            //done
             catch (OperationCanceledException)
             {
                 if (Directory.Exists(outputPath))
@@ -469,7 +471,10 @@ namespace FileCompressor
                 string originalFile = selectedItems[0].SubItems[0].Text;
                 string dir = Path.GetDirectoryName(detxtFilePath.Text);
                 string nameOnly = Path.GetFileNameWithoutExtension(originalFile);
-                string outputFile = Path.Combine(dir, nameOnly + "_decompressed.txt");
+
+                string ext = Path.GetExtension(originalFile);// ➕
+                string outputFile = Path.Combine(dir, nameOnly + "_decompressed" + ext);
+                
                 detxtOutputPath.Text = outputFile;
             }
             else if (selectedItems.Count > 1)
