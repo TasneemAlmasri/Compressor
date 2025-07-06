@@ -396,18 +396,6 @@
 
         #endregion
 
-        //private TextBox txtFilePath;
-        //private Button btnBrowse;
-        //private GroupBox groupBox1;
-        //private GroupBox groupBox2;
-        //private RadioButton radioHuffman;
-        //private RadioButton radioShannon;
-        //private Button btnSetPassword;
-        //private Button btnStart;
-        //private Button btnCancel;
-        //private GroupBox groupBox3;
-        //private Button btnBrowseDistance;
-        //private TextBox txtOutputPath;
         private TextBox txtFilePath;
         private Button btnBrowse;
         private GroupBox groupBox1;

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\multi media projects\\FileCompressor\\FileCompressor\\FileCompressor.csproj": {}
+    "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\FileCompressor.csproj": {}
   },
   "projects": {
-    "D:\\multi media projects\\FileCompressor\\FileCompressor\\FileCompressor.csproj": {
+    "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\FileCompressor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\multi media projects\\FileCompressor\\FileCompressor\\FileCompressor.csproj",
+        "projectUniqueName": "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\FileCompressor.csproj",
         "projectName": "FileCompressor",
-        "projectPath": "D:\\multi media projects\\FileCompressor\\FileCompressor\\FileCompressor.csproj",
-        "packagesPath": "C:\\Users\\TasneemMasri\\.nuget\\packages\\",
-        "outputPath": "D:\\multi media projects\\FileCompressor\\FileCompressor\\obj\\",
+        "projectPath": "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\FileCompressor.csproj",
+        "packagesPath": "C:\\Users\\lenovo\\.nuget\\packages\\",
+        "outputPath": "C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\TasneemMasri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0-windows7.0": {
@@ -74,7 +74,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

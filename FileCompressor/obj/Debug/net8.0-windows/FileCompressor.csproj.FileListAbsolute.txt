@@ -18,3 +18,23 @@ D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\F
 D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\ref\FileCompressor.dll
 D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.PasswordPromptForm.resources
 D:\multi media projects\FileCompressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.ComparisonForm.resources
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.exe
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.deps.json
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.runtimeconfig.json
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.dll
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\bin\Debug\net8.0-windows\FileCompressor.pdb
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.ComparisonForm.resources
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.Form1.resources
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.PasswordPromptForm.resources
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.ProgressForm.resources
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.csproj.GenerateResource.cache
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.GeneratedMSBuildEditorConfig.editorconfig
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.AssemblyInfoInputs.cache
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.AssemblyInfo.cs
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.csproj.CoreCompileInputs.cache
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.sourcelink.json
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.dll
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\refint\FileCompressor.dll
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.pdb
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\FileCompressor.genruntimeconfig.cache
+C:\Drive_D\university\Multimedia\visual_projects\Compressor\FileCompressor\obj\Debug\net8.0-windows\ref\FileCompressor.dll

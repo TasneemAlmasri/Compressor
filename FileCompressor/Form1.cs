@@ -10,6 +10,32 @@ namespace FileCompressor
         public Form1()
         {
             InitializeComponent();
+            this.MinimumSize = new Size(500, 350);
+            this.MaximumSize = new Size(1920, 1080);
+            this.FormBorderStyle = FormBorderStyle.Sizable; txtFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBrowseFolders.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            txtOutputPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnBrowseDistance.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnStart.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            tabCompress.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            lvArchiveContents.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox6.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnDecompress_Click.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnCancel2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            tabCompress.Dock = DockStyle.Fill;
+
         }
         private void btnBrowse_Click(object sender, EventArgs e)
         {

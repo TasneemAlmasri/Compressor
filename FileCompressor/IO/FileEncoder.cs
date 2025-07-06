@@ -335,7 +335,7 @@ namespace FileCompressorApp.IO
 
                         string encodedBits = BitHelper.UnpackBits(encodedBytes, encodedBitCount);
 
-                        if (filesToExtract.Contains(relativePath))
+                        if (filesToExtract==null || filesToExtract.Count == 0 || filesToExtract.Contains(relativePath))
                         {
                             byte[] decodedText = null; 
 

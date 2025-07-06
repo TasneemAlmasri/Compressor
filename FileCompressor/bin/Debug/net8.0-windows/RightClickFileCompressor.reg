@@ -1,0 +1,28 @@
+Windows Registry Editor Version 5.00
+
+; ضغط أي ملف
+[HKEY_CLASSES_ROOT\*\shell\📦 Compress with FileCompressor]
+@="📦 Compress with FileCompressor"
+"Icon"="C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe"
+
+[HKEY_CLASSES_ROOT\*\shell\📦 Compress with FileCompressor\command]
+@="\"C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe\" compress \"%1\""
+
+; فك ضغط ملف بصيغة .bin
+[HKEY_CLASSES_ROOT\.bin]
+@="FileCompressor.binfile"
+
+[HKEY_CLASSES_ROOT\FileCompressor.binfile\shell\🔓 Decompress with FileCompressor]
+@="🔓 Decompress with FileCompressor"
+"Icon"="C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe"
+
+[HKEY_CLASSES_ROOT\FileCompressor.binfile\shell\🔓 Decompress with FileCompressor\command]
+@="\"C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe\" decompress \"%1\""
+
+; ضغط أي فولدر
+[HKEY_CLASSES_ROOT\Directory\shell\📦 Compress with FileCompressor]
+@="📦 Compress with FileCompressor"
+"Icon"="C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe"
+
+[HKEY_CLASSES_ROOT\Directory\shell\📦 Compress with FileCompressor\command]
+@="\"C:\\Drive_D\\university\\Multimedia\\visual_projects\\Compressor\\FileCompressor\\bin\\Debug\\net8.0-windows\\FileCompressor.exe\" compress \"%1\""
