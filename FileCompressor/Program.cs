@@ -26,7 +26,8 @@ namespace FileCompressorApp
 
                 if (!File.Exists(filePath) && !Directory.Exists(filePath))
                 {
-                    MessageBox.Show("🚫 الملف غير موجود", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("🚫 File not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     return;
                 }
 
@@ -38,6 +39,12 @@ namespace FileCompressorApp
                 {
                     if (action == "compress")
                     {
+                        if (Path.GetExtension(filePath).ToLower() == ".bin")
+                        {
+                            MessageBox.Show("❌ Cannot compress a .bin file. It's already compressed.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            return;
+                        }
                         string archivePath = Path.ChangeExtension(filePath, ".bin");
 
                         List<string> filesToCompress = new List<string>();
@@ -64,13 +71,17 @@ namespace FileCompressorApp
 
                         Task.Run(() =>
                         {
+                            string baseFolder = (Directory.Exists(filePath))
+        ? filePath
+        : Path.GetDirectoryName(filePath);
+
                             compressionReport = FileEncoder.SaveEncodedFile(
                                 archivePath,
                                 filesToCompress,
                                 "huffman",
                                 CancellationToken.None,
                                 progressForm.PauseEvent,
-                                baseFolder: filePath,  
+                                baseFolder: baseFolder,  
                                 progressReporter
                             );
                         }).Wait();
@@ -112,12 +123,14 @@ namespace FileCompressorApp
                         }
                         else
                         {
-                            MessageBox.Show("⚠️ لم يتم فك أي ملف. تأكد من أن الملف صالح", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("⚠️ No files were extracted. Please make sure the file is valid.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
                         }
                     }
                     else
                     {
-                        MessageBox.Show("🚫 أمر غير معروف. استخدم compress أو decompress", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("🚫 Unknown command. Use 'compress' or 'decompress'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     }
                 }
                 catch (OperationCanceledException)
@@ -143,7 +156,8 @@ namespace FileCompressorApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"❌ حدث خطأ غير متوقع:\n{ex.Message}", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"❌ An unexpected error occurred:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 }
                 finally
                 {
